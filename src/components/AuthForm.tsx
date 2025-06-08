@@ -7,13 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
-import { Loader2, mail, lock, user, arrow-left } from 'lucide-react';
+import { Loader2, Mail, Lock, User, ArrowLeft } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
-
-const Mail = mail;
-const Lock = lock;
-const User = user;
-const ArrowLeft = arrow-left;
 
 interface AuthFormProps {
   onBack?: () => void;

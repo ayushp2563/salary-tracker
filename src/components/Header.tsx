@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { log-out, user } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import {
   DropdownMenu,
@@ -10,9 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-
-const LogOut = log-out;
-const User = user;
 
 const Header = () => {
   const { user: currentUser, signOut } = useAuth();
