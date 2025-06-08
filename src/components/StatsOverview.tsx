@@ -1,19 +1,18 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useSalaryStore } from '@/store/salaryStore';
+import { useSalaryEntries } from '@/hooks/useSalaryEntries';
 import { ArrowUp, ArrowDown, Calendar, FileText } from 'lucide-react';
 
 const StatsOverview = () => {
-  const entries = useSalaryStore((state) => state.entries);
-  const getWeeklySummaries = useSalaryStore((state) => state.getWeeklySummaries);
+  const { entries, getWeeklySummaries } = useSalaryEntries();
   
   const weeklySummaries = getWeeklySummaries();
   const currentWeek = weeklySummaries[0];
   const previousWeek = weeklySummaries[1];
 
-  const totalIncome = entries.reduce((sum, entry) => sum + entry.baseSalary + entry.tips, 0);
-  const totalHours = entries.reduce((sum, entry) => sum + entry.hoursWorked, 0);
+  const totalIncome = entries.reduce((sum, entry) => sum + entry.base_salary + entry.tips, 0);
+  const totalHours = entries.reduce((sum, entry) => sum + entry.hours_worked, 0);
   const totalTips = entries.reduce((sum, entry) => sum + entry.tips, 0);
   const averageHourlyRate = totalHours > 0 ? totalIncome / totalHours : 0;
 

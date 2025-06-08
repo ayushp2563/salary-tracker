@@ -5,56 +5,47 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useSalaryStore } from '@/store/salaryStore';
 import { Plus } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { useSalaryEntries } from '@/hooks/useSalaryEntries';
 
 const SalaryForm = () => {
   const [formData, setFormData] = useState({
-    startDate: '',
-    endDate: '',
-    hoursWorked: '',
-    baseSalary: '',
+    start_date: '',
+    end_date: '',
+    hours_worked: '',
+    base_salary: '',
     tips: '',
     currency: 'USD',
   });
 
-  const addEntry = useSalaryStore((state) => state.addEntry);
+  const { addEntry } = useSalaryEntries();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.startDate || !formData.endDate || !formData.hoursWorked || !formData.baseSalary) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive",
-      });
+    if (!formData.start_date || !formData.end_date || !formData.hours_worked || !formData.base_salary) {
       return;
     }
 
-    addEntry({
-      startDate: formData.startDate,
-      endDate: formData.endDate,
-      hoursWorked: parseFloat(formData.hoursWorked),
-      baseSalary: parseFloat(formData.baseSalary),
+    const { error } = await addEntry({
+      start_date: formData.start_date,
+      end_date: formData.end_date,
+      hours_worked: parseFloat(formData.hours_worked),
+      base_salary: parseFloat(formData.base_salary),
       tips: parseFloat(formData.tips) || 0,
       currency: formData.currency,
     });
 
-    setFormData({
-      startDate: '',
-      endDate: '',
-      hoursWorked: '',
-      baseSalary: '',
-      tips: '',
-      currency: 'USD',
-    });
-
-    toast({
-      title: "Entry Added",
-      description: "Your salary entry has been saved successfully!",
-    });
+    if (!error) {
+      setFormData({
+        start_date: '',
+        end_date: '',
+        hours_worked: '',
+        base_salary: '',
+        tips: '',
+        currency: 'USD',
+      });
+    }
   };
 
   const handleChange = (field: string, value: string) => {
@@ -76,22 +67,22 @@ const SalaryForm = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="startDate">Start Date</Label>
+              <Label htmlFor="start_date">Start Date</Label>
               <Input
-                id="startDate"
+                id="start_date"
                 type="date"
-                value={formData.startDate}
-                onChange={(e) => handleChange('startDate', e.target.value)}
+                value={formData.start_date}
+                onChange={(e) => handleChange('start_date', e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="endDate">End Date</Label>
+              <Label htmlFor="end_date">End Date</Label>
               <Input
-                id="endDate"
+                id="end_date"
                 type="date"
-                value={formData.endDate}
-                onChange={(e) => handleChange('endDate', e.target.value)}
+                value={formData.end_date}
+                onChange={(e) => handleChange('end_date', e.target.value)}
                 required
               />
             </div>
@@ -99,28 +90,28 @@ const SalaryForm = () => {
           
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="hoursWorked">Hours Worked</Label>
+              <Label htmlFor="hours_worked">Hours Worked</Label>
               <Input
-                id="hoursWorked"
+                id="hours_worked"
                 type="number"
                 step="0.5"
                 min="0"
                 placeholder="40.0"
-                value={formData.hoursWorked}
-                onChange={(e) => handleChange('hoursWorked', e.target.value)}
+                value={formData.hours_worked}
+                onChange={(e) => handleChange('hours_worked', e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="baseSalary">Base Salary</Label>
+              <Label htmlFor="base_salary">Base Salary</Label>
               <Input
-                id="baseSalary"
+                id="base_salary"
                 type="number"
                 step="0.01"
                 min="0"
                 placeholder="1000.00"
-                value={formData.baseSalary}
-                onChange={(e) => handleChange('baseSalary', e.target.value)}
+                value={formData.base_salary}
+                onChange={(e) => handleChange('base_salary', e.target.value)}
                 required
               />
             </div>

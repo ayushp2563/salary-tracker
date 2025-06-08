@@ -2,11 +2,11 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { useSalaryStore } from '@/store/salaryStore';
+import { useSalaryEntries } from '@/hooks/useSalaryEntries';
 import { ChartBar } from 'lucide-react';
 
 const IncomeChart = () => {
-  const getWeeklySummaries = useSalaryStore((state) => state.getWeeklySummaries);
+  const { getWeeklySummaries } = useSalaryEntries();
   const weeklySummaries = getWeeklySummaries();
 
   const chartData = weeklySummaries
