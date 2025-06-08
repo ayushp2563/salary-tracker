@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
@@ -29,6 +30,7 @@ export const useSalaryEntries = () => {
   const [entries, setEntries] = useState<SalaryEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const subscriptionRef = useRef<any>(null);
 
   const fetchEntries = async () => {
     if (!user) {
@@ -70,12 +72,27 @@ export const useSalaryEntries = () => {
 
   // Set up real-time subscription
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      // Clean up any existing subscription when user logs out
+      if (subscriptionRef.current) {
+        console.log('Cleaning up subscription on user logout');
+        supabase.removeChannel(subscriptionRef.current);
+        subscriptionRef.current = null;
+      }
+      return;
+    }
+
+    // Clean up any existing subscription before creating a new one
+    if (subscriptionRef.current) {
+      console.log('Cleaning up existing subscription before creating new one');
+      supabase.removeChannel(subscriptionRef.current);
+      subscriptionRef.current = null;
+    }
 
     console.log('Setting up real-time subscription for user:', user.id);
     
     // Create a unique channel name for this user
-    const channelName = `salary_entries_${user.id}`;
+    const channelName = `salary_entries_${user.id}_${Date.now()}`;
     
     const subscription = supabase
       .channel(channelName)
@@ -117,9 +134,15 @@ export const useSalaryEntries = () => {
       )
       .subscribe();
 
+    // Store the subscription reference
+    subscriptionRef.current = subscription;
+
     return () => {
-      console.log('Cleaning up real-time subscription');
-      supabase.removeChannel(subscription);
+      if (subscriptionRef.current) {
+        console.log('Cleaning up real-time subscription in useEffect cleanup');
+        supabase.removeChannel(subscriptionRef.current);
+        subscriptionRef.current = null;
+      }
     };
   }, [user?.id]); // Changed dependency to user?.id to avoid recreating when user object changes
 
