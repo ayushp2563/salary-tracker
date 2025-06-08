@@ -1,8 +1,8 @@
-
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
+import { useRealtimeSubscription } from './useRealtimeSubscription';
 
 export interface SalaryEntry {
   id: string;
@@ -30,7 +30,6 @@ export const useSalaryEntries = () => {
   const [entries, setEntries] = useState<SalaryEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-  const subscriptionRef = useRef<any>(null);
 
   const fetchEntries = async () => {
     if (!user) {
@@ -70,81 +69,34 @@ export const useSalaryEntries = () => {
     fetchEntries();
   }, [user]);
 
-  // Set up real-time subscription
-  useEffect(() => {
-    if (!user) {
-      // Clean up any existing subscription when user logs out
-      if (subscriptionRef.current) {
-        console.log('Cleaning up subscription on user logout');
-        supabase.removeChannel(subscriptionRef.current);
-        subscriptionRef.current = null;
-      }
-      return;
+  // Handle real-time updates
+  const handleRealtimeUpdate = (payload: any) => {
+    if (payload.eventType === 'INSERT') {
+      setEntries((prev) => [payload.new as SalaryEntry, ...prev]);
+      toast({
+        title: "Entry Added",
+        description: "Your salary entry has been saved!",
+      });
+    } else if (payload.eventType === 'UPDATE') {
+      setEntries((prev) =>
+        prev.map((entry) =>
+          entry.id === payload.new.id ? (payload.new as SalaryEntry) : entry
+        )
+      );
+      toast({
+        title: "Entry Updated",
+        description: "Your salary entry has been updated!",
+      });
+    } else if (payload.eventType === 'DELETE') {
+      setEntries((prev) => prev.filter((entry) => entry.id !== payload.old.id));
+      toast({
+        title: "Entry Deleted",
+        description: "Your salary entry has been deleted!",
+      });
     }
+  };
 
-    // Clean up any existing subscription before creating a new one
-    if (subscriptionRef.current) {
-      console.log('Cleaning up existing subscription before creating new one');
-      supabase.removeChannel(subscriptionRef.current);
-      subscriptionRef.current = null;
-    }
-
-    console.log('Setting up real-time subscription for user:', user.id);
-    
-    // Create a unique channel name for this user
-    const channelName = `salary_entries_${user.id}_${Date.now()}`;
-    
-    const subscription = supabase
-      .channel(channelName)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'salary_entries',
-          filter: `user_id=eq.${user.id}`,
-        },
-        (payload) => {
-          console.log('Real-time update received:', payload);
-          
-          if (payload.eventType === 'INSERT') {
-            setEntries((prev) => [payload.new as SalaryEntry, ...prev]);
-            toast({
-              title: "Entry Added",
-              description: "Your salary entry has been saved!",
-            });
-          } else if (payload.eventType === 'UPDATE') {
-            setEntries((prev) =>
-              prev.map((entry) =>
-                entry.id === payload.new.id ? (payload.new as SalaryEntry) : entry
-              )
-            );
-            toast({
-              title: "Entry Updated",
-              description: "Your salary entry has been updated!",
-            });
-          } else if (payload.eventType === 'DELETE') {
-            setEntries((prev) => prev.filter((entry) => entry.id !== payload.old.id));
-            toast({
-              title: "Entry Deleted",
-              description: "Your salary entry has been deleted!",
-            });
-          }
-        }
-      )
-      .subscribe();
-
-    // Store the subscription reference
-    subscriptionRef.current = subscription;
-
-    return () => {
-      if (subscriptionRef.current) {
-        console.log('Cleaning up real-time subscription in useEffect cleanup');
-        supabase.removeChannel(subscriptionRef.current);
-        subscriptionRef.current = null;
-      }
-    };
-  }, [user?.id]); // Changed dependency to user?.id to avoid recreating when user object changes
+  useRealtimeSubscription(handleRealtimeUpdate);
 
   const addEntry = async (entryData: Omit<SalaryEntry, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     if (!user) return { error: 'User not authenticated' };
