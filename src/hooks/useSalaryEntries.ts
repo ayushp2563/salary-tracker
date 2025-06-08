@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -75,8 +74,11 @@ export const useSalaryEntries = () => {
 
     console.log('Setting up real-time subscription for user:', user.id);
     
+    // Create a unique channel name for this user
+    const channelName = `salary_entries_${user.id}`;
+    
     const subscription = supabase
-      .channel('salary_entries_changes')
+      .channel(channelName)
       .on(
         'postgres_changes',
         {
@@ -119,7 +121,7 @@ export const useSalaryEntries = () => {
       console.log('Cleaning up real-time subscription');
       supabase.removeChannel(subscription);
     };
-  }, [user]);
+  }, [user?.id]); // Changed dependency to user?.id to avoid recreating when user object changes
 
   const addEntry = async (entryData: Omit<SalaryEntry, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     if (!user) return { error: 'User not authenticated' };
