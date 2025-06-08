@@ -39,14 +39,21 @@ export const useSalaryEntries = () => {
     }
 
     try {
+      console.log('Fetching salary entries for user:', user.id);
       const { data, error } = await supabase
         .from('salary_entries')
         .select('*')
+        .eq('user_id', user.id)
         .order('start_date', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching salary entries:', error);
+        throw error;
+      }
+      
+      console.log('Fetched entries:', data?.length);
       setEntries(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching salary entries:', error);
       toast({
         title: "Error",
@@ -62,10 +69,63 @@ export const useSalaryEntries = () => {
     fetchEntries();
   }, [user]);
 
+  // Set up real-time subscription
+  useEffect(() => {
+    if (!user) return;
+
+    console.log('Setting up real-time subscription for user:', user.id);
+    
+    const subscription = supabase
+      .channel('salary_entries_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'salary_entries',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          console.log('Real-time update received:', payload);
+          
+          if (payload.eventType === 'INSERT') {
+            setEntries((prev) => [payload.new as SalaryEntry, ...prev]);
+            toast({
+              title: "Entry Added",
+              description: "Your salary entry has been saved!",
+            });
+          } else if (payload.eventType === 'UPDATE') {
+            setEntries((prev) =>
+              prev.map((entry) =>
+                entry.id === payload.new.id ? (payload.new as SalaryEntry) : entry
+              )
+            );
+            toast({
+              title: "Entry Updated",
+              description: "Your salary entry has been updated!",
+            });
+          } else if (payload.eventType === 'DELETE') {
+            setEntries((prev) => prev.filter((entry) => entry.id !== payload.old.id));
+            toast({
+              title: "Entry Deleted",
+              description: "Your salary entry has been deleted!",
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      console.log('Cleaning up real-time subscription');
+      supabase.removeChannel(subscription);
+    };
+  }, [user]);
+
   const addEntry = async (entryData: Omit<SalaryEntry, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     if (!user) return { error: 'User not authenticated' };
 
     try {
+      console.log('Adding new entry:', entryData);
       const { data, error } = await supabase
         .from('salary_entries')
         .insert([{
@@ -75,20 +135,18 @@ export const useSalaryEntries = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error adding salary entry:', error);
+        throw error;
+      }
       
-      setEntries(prev => [data, ...prev]);
-      toast({
-        title: "Entry Added",
-        description: "Your salary entry has been saved successfully!",
-      });
-      
+      console.log('Entry added successfully:', data);
       return { data, error: null };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding salary entry:', error);
       toast({
         title: "Error",
-        description: "Failed to add salary entry",
+        description: error.message || "Failed to add salary entry",
         variant: "destructive",
       });
       return { data: null, error };
@@ -97,27 +155,26 @@ export const useSalaryEntries = () => {
 
   const updateEntry = async (id: string, updates: Partial<SalaryEntry>) => {
     try {
+      console.log('Updating entry:', id, updates);
       const { data, error } = await supabase
         .from('salary_entries')
         .update(updates)
         .eq('id', id)
+        .eq('user_id', user?.id)
         .select()
         .single();
 
-      if (error) throw error;
-      
-      setEntries(prev => prev.map(entry => entry.id === id ? data : entry));
-      toast({
-        title: "Entry Updated",
-        description: "Your salary entry has been updated successfully!",
-      });
+      if (error) {
+        console.error('Error updating salary entry:', error);
+        throw error;
+      }
       
       return { data, error: null };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating salary entry:', error);
       toast({
         title: "Error",
-        description: "Failed to update salary entry",
+        description: error.message || "Failed to update salary entry",
         variant: "destructive",
       });
       return { data: null, error };
@@ -126,25 +183,24 @@ export const useSalaryEntries = () => {
 
   const deleteEntry = async (id: string) => {
     try {
+      console.log('Deleting entry:', id);
       const { error } = await supabase
         .from('salary_entries')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .eq('user_id', user?.id);
 
-      if (error) throw error;
-      
-      setEntries(prev => prev.filter(entry => entry.id !== id));
-      toast({
-        title: "Entry Deleted",
-        description: "Your salary entry has been deleted successfully!",
-      });
+      if (error) {
+        console.error('Error deleting salary entry:', error);
+        throw error;
+      }
       
       return { error: null };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting salary entry:', error);
       toast({
         title: "Error",
-        description: "Failed to delete salary entry",
+        description: error.message || "Failed to delete salary entry",
         variant: "destructive",
       });
       return { error };

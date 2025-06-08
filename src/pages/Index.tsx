@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSalaryEntries } from '@/hooks/useSalaryEntries';
 import AuthForm from '@/components/AuthForm';
 import Header from '@/components/Header';
+import LandingPage from '@/components/LandingPage';
 import SalaryForm from '@/components/SalaryForm';
 import WeeklySummaryCard from '@/components/WeeklySummaryCard';
 import IncomeChart from '@/components/IncomeChart';
@@ -13,23 +14,28 @@ import { Loader2 } from 'lucide-react';
 const Index = () => {
   const { user, loading: authLoading } = useAuth();
   const { getWeeklySummaries, loading: dataLoading } = useSalaryEntries();
+  const [showAuth, setShowAuth] = useState(false);
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
-  if (!user) {
-    return <AuthForm />;
+  if (!user && !showAuth) {
+    return <LandingPage onGetStarted={() => setShowAuth(true)} />;
+  }
+
+  if (!user && showAuth) {
+    return <AuthForm onBack={() => setShowAuth(false)} />;
   }
 
   const weeklySummaries = getWeeklySummaries();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <Header />
       
       <div className="container mx-auto px-4 py-8 space-y-8">
