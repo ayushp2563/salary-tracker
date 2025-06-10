@@ -49,9 +49,9 @@ const TipsForm = () => {
   };
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
           <Plus className="h-5 w-5" />
           Add Tips
         </CardTitle>

@@ -46,13 +46,15 @@ const WeeklySummaryCard: React.FC<WeeklySummaryCardProps> = ({
   return (
     <Card className="hover:shadow-lg transition-shadow duration-200">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center justify-between text-lg">
+        <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm sm:text-lg gap-2">
           <span className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            {formatDate(weekStart)} - {formatDate(weekEnd)}
+            <span className="text-xs sm:text-base">
+              {formatDate(weekStart)} - {formatDate(weekEnd)}
+            </span>
           </span>
           {change !== null && (
-            <Badge variant={change >= 0 ? "default" : "destructive"} className="ml-2">
+            <Badge variant={change >= 0 ? "default" : "destructive"} className="self-start sm:self-auto text-xs">
               {change >= 0 ? <ArrowUp className="h-3 w-3 mr-1" /> : <ArrowDown className="h-3 w-3 mr-1" />}
               {Math.abs(change).toFixed(1)}%
             </Badge>
@@ -60,22 +62,26 @@ const WeeklySummaryCard: React.FC<WeeklySummaryCardProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-primary">{totalHours}</div>
-            <div className="text-sm text-muted-foreground">Hours</div>
+            <div className="text-lg sm:text-2xl font-bold text-primary">{totalHours}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Hours</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">{formatCurrency(totalIncome)}</div>
-            <div className="text-sm text-muted-foreground">Total Income</div>
+            <div className="text-lg sm:text-2xl font-bold text-green-600 break-all">
+              {formatCurrency(totalIncome)}
+            </div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Total Income</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">{formatCurrency(totalTips)}</div>
-            <div className="text-sm text-muted-foreground">Tips</div>
+            <div className="text-lg sm:text-2xl font-bold text-blue-600 break-all">
+              {formatCurrency(totalTips)}
+            </div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Tips</div>
           </div>
         </div>
         <div className="pt-2 border-t">
-          <div className="text-sm text-muted-foreground">
+          <div className="text-xs sm:text-sm text-muted-foreground text-center">
             Average per hour: {formatCurrency(totalHours > 0 ? totalIncome / totalHours : 0)}
           </div>
         </div>

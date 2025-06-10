@@ -5,9 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from 'lucide-react';
 import { useSalaryEntries, WeeklySummary } from '@/hooks/useSalaryEntries';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 
 const SalarySummaryOptions = () => {
   const [summaryType, setSummaryType] = useState<'weekly' | 'biweekly'>('weekly');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
   const { getWeeklySummaries } = useSalaryEntries();
 
   const getCustomSummaries = (): WeeklySummary[] => {
@@ -41,6 +44,17 @@ const SalarySummaryOptions = () => {
 
   const summaries = getCustomSummaries();
 
+  // Reset to page 1 when summary type changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [summaryType]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(summaries.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentSummaries = summaries.slice(startIndex, endIndex);
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -54,10 +68,14 @@ const SalarySummaryOptions = () => {
     return `${startDate} - ${endDate}`;
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
           <Calendar className="h-5 w-5" />
           Salary Summaries
         </CardTitle>
@@ -66,10 +84,10 @@ const SalarySummaryOptions = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <label className="text-sm font-medium">Summary Type:</label>
           <Select value={summaryType} onValueChange={(value: 'weekly' | 'biweekly') => setSummaryType(value)}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-full sm:w-40">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -79,60 +97,99 @@ const SalarySummaryOptions = () => {
           </Select>
         </div>
 
-        <div className="space-y-3 max-h-96 overflow-y-auto">
+        <div className="space-y-3">
           {summaries.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <p>No entries found</p>
               <p className="text-sm">Add salary entries to see summaries</p>
             </div>
           ) : (
-            summaries.slice(0, 8).map((summary, index) => (
-              <div key={`${summary.weekStart}-${summary.weekEnd}-${index}`} className="border rounded-lg p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h4 className="font-medium">
-                      {formatDateRange(summary.weekStart, summary.weekEnd)}
-                    </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {summary.entries.length} entries • {summary.totalHours} hours
-                    </p>
+            <>
+              {currentSummaries.map((summary, index) => (
+                <div key={`${summary.weekStart}-${summary.weekEnd}-${index}`} className="border rounded-lg p-3 sm:p-4">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 gap-2">
+                    <div className="flex-1">
+                      <h4 className="font-medium text-sm sm:text-base">
+                        {formatDateRange(summary.weekStart, summary.weekEnd)}
+                      </h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground">
+                        {summary.entries.length} entries • {summary.totalHours} hours
+                      </p>
+                    </div>
+                    <div className="text-left sm:text-right">
+                      <p className="font-semibold text-lg sm:text-xl text-green-600">
+                        {formatCurrency(summary.totalIncome)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-lg">
-                      {formatCurrency(summary.totalIncome)}
-                    </p>
+                  
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
+                    <div>
+                      <span className="text-muted-foreground">Base Salary: </span>
+                      <span className="font-medium">
+                        {formatCurrency(summary.totalIncome - summary.totalTips)}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Tips: </span>
+                      <span className="font-medium">
+                        {formatCurrency(summary.totalTips)}
+                      </span>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-muted-foreground">Base Salary: </span>
-                    <span className="font-medium">
-                      {formatCurrency(summary.totalIncome - summary.totalTips)}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Tips: </span>
-                    <span className="font-medium">
-                      {formatCurrency(summary.totalTips)}
-                    </span>
-                  </div>
-                </div>
 
-                {summary.entries.length > 0 && (
-                  <div className="mt-2 pt-2 border-t">
-                    <p className="text-xs text-muted-foreground">
-                      Latest entry: {new Date(summary.entries[0].created_at).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
+                  {summary.entries.length > 0 && (
+                    <div className="mt-3 pt-2 border-t">
+                      <p className="text-xs text-muted-foreground">
+                        Latest entry: {new Date(summary.entries[0].created_at).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {totalPages > 1 && (
+                <div className="mt-6">
+                  <Pagination>
+                    <PaginationContent className="flex flex-wrap justify-center gap-1">
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                          className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                        />
+                      </PaginationItem>
+                      
+                      {[...Array(totalPages)].map((_, index) => {
+                        const page = index + 1;
+                        return (
+                          <PaginationItem key={page}>
+                            <PaginationLink
+                              onClick={() => handlePageChange(page)}
+                              isActive={currentPage === page}
+                              className="cursor-pointer"
+                            >
+                              {page}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
                       })}
-                    </p>
-                  </div>
-                )}
-              </div>
-            ))
+                      
+                      <PaginationItem>
+                        <PaginationNext 
+                          onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                          className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
+            </>
           )}
         </div>
       </CardContent>
