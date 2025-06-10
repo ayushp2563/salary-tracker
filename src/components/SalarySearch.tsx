@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { search, Calendar } from 'lucide-react';
+import { Search, Calendar } from 'lucide-react';
 import { useSalaryEntries, SalaryEntry } from '@/hooks/useSalaryEntries';
 import EditEntryDialog from './EditEntryDialog';
 
@@ -61,7 +61,7 @@ const SalarySearch = () => {
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <search className="h-5 w-5" />
+          <Search className="h-5 w-5" />
           Search Salary Reports
         </CardTitle>
         <CardDescription>
@@ -91,7 +91,7 @@ const SalarySearch = () => {
         </div>
         
         <Button onClick={handleSearch} className="w-full">
-          <search className="h-4 w-4 mr-2" />
+          <Search className="h-4 w-4 mr-2" />
           Search
         </Button>
 

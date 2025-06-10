@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { edit, Calendar } from 'lucide-react';
+import { Edit, Calendar } from 'lucide-react';
 import { useSalaryEntries, SalaryEntry } from '@/hooks/useSalaryEntries';
 
 interface EditEntryDialogProps {
@@ -50,7 +50,7 @@ const EditEntryDialog = ({ entry }: EditEntryDialogProps) => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          <edit className="h-4 w-4" />
+          <Edit className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
