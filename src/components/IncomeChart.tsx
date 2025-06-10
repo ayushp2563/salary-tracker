@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { useSalaryEntries } from '@/hooks/useSalaryEntries';
 import { ChartBar } from 'lucide-react';
 
@@ -19,6 +19,21 @@ const IncomeChart = () => {
       baseSalary: week.totalIncome - week.totalTips,
       hours: week.totalHours,
     }));
+
+  // Prepare tips-specific data
+  const tipsData = chartData.map(data => ({
+    week: data.week,
+    tips: data.tips,
+    baseSalary: data.baseSalary,
+  }));
+
+  // Calculate total tips vs base salary for pie chart
+  const totalTips = chartData.reduce((sum, data) => sum + data.tips, 0);
+  const totalBaseSalary = chartData.reduce((sum, data) => sum + data.baseSalary, 0);
+  const pieData = [
+    { name: 'Base Salary', value: totalBaseSalary, color: '#10b981' },
+    { name: 'Tips', value: totalTips, color: '#3b82f6' },
+  ];
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -103,6 +118,62 @@ const IncomeChart = () => {
           </ResponsiveContainer>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Tips Analysis</CardTitle>
+          <CardDescription>Dedicated tips tracking over time</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={250}>
+            <LineChart data={tipsData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="week" />
+              <YAxis tickFormatter={formatCurrency} />
+              <Tooltip 
+                formatter={(value: number) => [formatCurrency(value), 'Tips']}
+                labelStyle={{ color: '#333' }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="tips" 
+                stroke="#f59e0b" 
+                strokeWidth={3}
+                dot={{ fill: '#f59e0b', strokeWidth: 2, r: 6 }}
+                activeDot={{ r: 8 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {(totalTips > 0 || totalBaseSalary > 0) && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Income Distribution</CardTitle>
+            <CardDescription>Overall breakdown of base salary vs tips</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  dataKey="value"
+                  label={({ name, value }) => `${name}: ${formatCurrency(value)}`}
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value: number) => formatCurrency(value)} />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
