@@ -4,10 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Search, Calendar } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useSalaryEntries, SalaryEntry } from '@/hooks/useSalaryEntries';
-import EditEntryDialog from './EditEntryDialog';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import SalaryEntryCard from './SalaryEntryCard';
 
 const SalarySearch = () => {
   const [searchParams, setSearchParams] = useState({
@@ -38,24 +38,10 @@ const SalarySearch = () => {
     setCurrentPage(1);
   };
 
-  const formatCurrency = (amount: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD'
-    }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this entry?')) {
-      await deleteEntry(id);
+    await deleteEntry(id);
+    // Refresh search results
+    if (hasSearched) {
       handleSearch();
     }
   };
@@ -121,49 +107,11 @@ const SalarySearch = () => {
               <>
                 <div className="space-y-3">
                   {currentResults.map((entry) => (
-                    <div key={entry.id} className="border rounded-lg p-3 sm:p-4 space-y-3">
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-                        <div className="flex-1">
-                          <p className="font-medium text-sm sm:text-base">
-                            {formatDate(entry.start_date)} - {formatDate(entry.end_date)}
-                          </p>
-                          <p className="text-xs sm:text-sm text-muted-foreground">
-                            Added: {formatDate(entry.created_at)}
-                          </p>
-                        </div>
-                        <div className="flex gap-2 self-start sm:self-auto">
-                          <EditEntryDialog entry={entry} />
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => handleDelete(entry.id)}
-                            className="text-destructive hover:text-destructive text-xs sm:text-sm"
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-xs sm:text-sm">
-                        <div>
-                          <span className="text-muted-foreground">Hours: </span>
-                          <span className="font-medium">{entry.hours_worked}</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Base: </span>
-                          <span className="font-medium">{formatCurrency(entry.base_salary, entry.currency)}</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Tips: </span>
-                          <span className="font-medium">{formatCurrency(entry.tips, entry.currency)}</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Total: </span>
-                          <span className="font-semibold text-green-600">
-                            {formatCurrency(entry.base_salary + entry.tips, entry.currency)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                    <SalaryEntryCard 
+                      key={entry.id} 
+                      entry={entry} 
+                      onDelete={handleDelete}
+                    />
                   ))}
                 </div>
 

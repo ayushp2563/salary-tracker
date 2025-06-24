@@ -1,140 +1,71 @@
 
-import React, { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useSalaryEntries } from '@/hooks/useSalaryEntries';
-import AuthForm from '@/components/AuthForm';
-import Header from '@/components/Header';
-import LandingPage from '@/components/LandingPage';
-import SalaryForm from '@/components/SalaryForm';
-import TipsForm from '@/components/TipsForm';
-import WeeklySummaryCard from '@/components/WeeklySummaryCard';
-import IncomeChart from '@/components/IncomeChart';
-import StatsOverview from '@/components/StatsOverview';
-import SalarySummaryOptions from '@/components/SalarySummaryOptions';
-import SalarySearch from '@/components/SalarySearch';
-import { Loader2 } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import SalaryForm from "@/components/SalaryForm";
+import TipsForm from "@/components/TipsForm";
+import StatsOverview from "@/components/StatsOverview";
+import IncomeChart from "@/components/IncomeChart";
+import SalarySummaryOptions from "@/components/SalarySummaryOptions";
+import SalarySearch from "@/components/SalarySearch";
+import SalaryEntriesList from "@/components/SalaryEntriesList";
 
 const Index = () => {
-  const { user, loading: authLoading } = useAuth();
-  const { getWeeklySummaries, loading: dataLoading } = useSalaryEntries();
-  const [showAuth, setShowAuth] = useState(false);
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-
-  if (!user && !showAuth) {
-    return <LandingPage onGetStarted={() => setShowAuth(true)} />;
-  }
-
-  if (!user && showAuth) {
-    return <AuthForm onBack={() => setShowAuth(false)} />;
-  }
-
-  const weeklySummaries = getWeeklySummaries();
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <Header />
-      
-      <div className="container mx-auto px-4 py-4 sm:py-8 space-y-6 sm:space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 p-2 sm:p-4 lg:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="text-center space-y-2 sm:space-y-4">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-            Welcome back!
+        <div className="text-center space-y-2 sm:space-y-4 py-4 sm:py-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+            Salary Tracker
           </h1>
-          <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
-            Track your earnings, monitor trends, and gain insights into your income patterns
+          <p className="text-sm sm:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto px-4">
+            Track your earnings, monitor trends, and manage your income with ease
           </p>
         </div>
 
-        {dataLoading ? (
-          <div className="flex justify-center">
-            <Loader2 className="h-8 w-8 animate-spin" />
-          </div>
-        ) : (
-          <>
-            {/* Stats Overview */}
-            <StatsOverview />
+        {/* Stats Overview */}
+        <StatsOverview />
 
-            {/* Main Content with Tabs */}
-            <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
-                <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
-                <TabsTrigger value="entries" className="text-xs sm:text-sm">Manage</TabsTrigger>
-                <TabsTrigger value="summaries" className="text-xs sm:text-sm">Summary</TabsTrigger>
-                <TabsTrigger value="search" className="text-xs sm:text-sm">Search</TabsTrigger>
-              </TabsList>
+        {/* Main Content Tabs */}
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto p-1">
+            <TabsTrigger value="overview" className="text-xs sm:text-sm py-2">
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="add" className="text-xs sm:text-sm py-2">
+              Add Entry
+            </TabsTrigger>
+            <TabsTrigger value="search" className="text-xs sm:text-sm py-2">
+              Search
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="text-xs sm:text-sm py-2">
+              Analytics
+            </TabsTrigger>
+          </TabsList>
 
-              <TabsContent value="overview" className="space-y-6 sm:space-y-8">
-                <div className="grid gap-6 sm:gap-8 lg:grid-cols-3">
-                  {/* Left Column - Forms and Charts */}
-                  <div className="lg:col-span-2 space-y-6 sm:space-y-8">
-                    <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
-                      <SalaryForm />
-                      <TipsForm />
-                    </div>
-                    <IncomeChart />
-                  </div>
-
-                  {/* Right Column - Weekly Summaries */}
-                  <div className="space-y-4 sm:space-y-6">
-                    <div>
-                      <h2 className="text-xl sm:text-2xl font-semibold mb-4">Recent Summaries</h2>
-                      {weeklySummaries.length === 0 ? (
-                        <div className="text-center py-8 sm:py-12 text-muted-foreground">
-                          <p className="text-base sm:text-lg">No entries yet</p>
-                          <p className="text-xs sm:text-sm">Add your first salary entry to get started!</p>
-                        </div>
-                      ) : (
-                        <div className="space-y-3 sm:space-y-4 max-h-80 sm:max-h-96 overflow-y-auto">
-                          {weeklySummaries.slice(0, 6).map((week, index) => (
-                            <WeeklySummaryCard
-                              key={`${week.weekStart}-${week.weekEnd}`}
-                              weekStart={week.weekStart}
-                              weekEnd={week.weekEnd}
-                              totalHours={week.totalHours}
-                              totalIncome={week.totalIncome}
-                              totalTips={week.totalTips}
-                              previousWeekIncome={weeklySummaries[index + 1]?.totalIncome}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="entries" className="space-y-4 sm:space-y-6">
-                <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
-                  <SalaryForm />
-                  <TipsForm />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="summaries" className="space-y-4 sm:space-y-6">
-                <SalarySummaryOptions />
-              </TabsContent>
-
-              <TabsContent value="search" className="space-y-4 sm:space-y-6">
-                <SalarySearch />
-              </TabsContent>
-            </Tabs>
-
-            {/* Footer */}
-            <div className="text-center pt-6 sm:pt-8 border-t">
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                Keep track of your earnings and watch your income grow! 📈
-              </p>
+          <TabsContent value="overview" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
+            <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+              <SalaryEntriesList />
+              <SalarySummaryOptions />
             </div>
-          </>
-        )}
+          </TabsContent>
+
+          <TabsContent value="add" className="mt-4 sm:mt-6">
+            <div className="grid gap-4 sm:gap-6 lg:grid-cols-2 max-w-6xl mx-auto">
+              <SalaryForm />
+              <TipsForm />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="search" className="mt-4 sm:mt-6">
+            <div className="max-w-4xl mx-auto">
+              <SalarySearch />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="analytics" className="mt-4 sm:mt-6">
+            <IncomeChart />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
