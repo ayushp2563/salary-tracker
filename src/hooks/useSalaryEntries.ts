@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
-import { useRealtimeSubscription } from './useRealtimeSubscription';
 
 export interface SalaryEntry {
   id: string;
@@ -69,34 +69,59 @@ export const useSalaryEntries = () => {
     fetchEntries();
   }, [user]);
 
-  // Handle real-time updates
-  const handleRealtimeUpdate = (payload: any) => {
-    if (payload.eventType === 'INSERT') {
-      setEntries((prev) => [payload.new as SalaryEntry, ...prev]);
-      toast({
-        title: "Entry Added",
-        description: "Your salary entry has been saved!",
-      });
-    } else if (payload.eventType === 'UPDATE') {
-      setEntries((prev) =>
-        prev.map((entry) =>
-          entry.id === payload.new.id ? (payload.new as SalaryEntry) : entry
-        )
-      );
-      toast({
-        title: "Entry Updated",
-        description: "Your salary entry has been updated!",
-      });
-    } else if (payload.eventType === 'DELETE') {
-      setEntries((prev) => prev.filter((entry) => entry.id !== payload.old.id));
-      toast({
-        title: "Entry Deleted",
-        description: "Your salary entry has been deleted!",
-      });
+  // Set up real-time subscription
+  useEffect(() => {
+    if (!user) {
+      return;
     }
-  };
 
-  useRealtimeSubscription(handleRealtimeUpdate);
+    console.log('Setting up real-time subscription for user:', user.id);
+    
+    const channel = supabase
+      .channel(`salary_entries_${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'salary_entries',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          console.log('Real-time update received:', payload);
+          
+          if (payload.eventType === 'INSERT') {
+            setEntries((prev) => [payload.new as SalaryEntry, ...prev]);
+            toast({
+              title: "Entry Added",
+              description: "Your salary entry has been saved!",
+            });
+          } else if (payload.eventType === 'UPDATE') {
+            setEntries((prev) =>
+              prev.map((entry) =>
+                entry.id === payload.new.id ? (payload.new as SalaryEntry) : entry
+              )
+            );
+            toast({
+              title: "Entry Updated",
+              description: "Your salary entry has been updated!",
+            });
+          } else if (payload.eventType === 'DELETE') {
+            setEntries((prev) => prev.filter((entry) => entry.id !== payload.old.id));
+            toast({
+              title: "Entry Deleted",
+              description: "Your salary entry has been deleted!",
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      console.log('Cleaning up real-time subscription');
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
 
   const addEntry = async (entryData: Omit<SalaryEntry, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     if (!user) return { error: 'User not authenticated' };
