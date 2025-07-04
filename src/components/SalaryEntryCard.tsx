@@ -20,6 +20,20 @@ const SalaryEntryCard = ({ entry, onDelete }: SalaryEntryCardProps) => {
   };
 
   const formatDate = (dateString: string) => {
+    // Parse the date string directly without timezone conversion
+    const [year, month, day] = dateString.split('-');
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      timeZone: 'UTC'
+    });
+  };
+
+  const formatCreatedDate = (dateString: string) => {
+    // For created_at timestamp, use normal date formatting
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -42,7 +56,7 @@ const SalaryEntryCard = ({ entry, onDelete }: SalaryEntryCardProps) => {
               {formatDate(entry.start_date)} - {formatDate(entry.end_date)}
             </p>
             <p className="text-xs sm:text-sm text-muted-foreground">
-              Added: {formatDate(entry.created_at)}
+              Added: {formatCreatedDate(entry.created_at)}
             </p>
           </div>
           <div className="flex gap-2 self-start sm:self-auto">
