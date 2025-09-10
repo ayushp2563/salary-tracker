@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { Edit, Calendar } from 'lucide-react';
 import { useSalaryEntries, SalaryEntry } from '@/hooks/useSalaryEntries';
 
@@ -21,6 +22,7 @@ const EditEntryDialog = ({ entry }: EditEntryDialogProps) => {
     base_salary: entry.base_salary.toString(),
     tips: entry.tips.toString(),
     currency: entry.currency,
+    description: entry.description || '',
   });
 
   const { updateEntry } = useSalaryEntries();
@@ -35,6 +37,7 @@ const EditEntryDialog = ({ entry }: EditEntryDialogProps) => {
       base_salary: parseFloat(formData.base_salary),
       tips: parseFloat(formData.tips) || 0,
       currency: formData.currency,
+      description: formData.description,
     });
 
     if (!error) {
@@ -137,6 +140,17 @@ const EditEntryDialog = ({ entry }: EditEntryDialogProps) => {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="edit_description">Description/Notes (Optional)</Label>
+            <Textarea
+              id="edit_description"
+              placeholder="Add any notes about this salary entry..."
+              value={formData.description}
+              onChange={(e) => handleChange('description', e.target.value)}
+              rows={3}
+            />
           </div>
           
           <div className="flex justify-end gap-2">

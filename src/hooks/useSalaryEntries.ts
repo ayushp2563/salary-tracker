@@ -14,6 +14,7 @@ export interface SalaryEntry {
   base_salary: number;
   tips: number;
   currency: string;
+  description?: string;
   created_at: string;
   updated_at: string;
 }

@@ -7,6 +7,7 @@ export interface SalaryEntry {
   baseSalary: number;
   tips: number;
   currency: string;
+  description?: string;
   createdAt: string;
 }
 

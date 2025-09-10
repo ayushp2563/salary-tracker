@@ -92,6 +92,13 @@ const SalaryEntryCard = ({ entry, onDelete }: SalaryEntryCardProps) => {
             </span>
           </div>
         </div>
+        
+        {entry.description && (
+          <div className="mt-3 pt-3 border-t border-border">
+            <span className="text-muted-foreground text-xs sm:text-sm">Notes: </span>
+            <p className="text-xs sm:text-sm mt-1 text-foreground">{entry.description}</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

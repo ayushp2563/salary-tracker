@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { Plus } from 'lucide-react';
 import { useSalaryEntries } from '@/hooks/useSalaryEntries';
 
@@ -16,6 +17,7 @@ const SalaryForm = () => {
     base_salary: '',
     tips: '',
     currency: 'USD',
+    description: '',
   });
 
   const { addEntry } = useSalaryEntries();
@@ -34,6 +36,7 @@ const SalaryForm = () => {
       base_salary: parseFloat(formData.base_salary),
       tips: parseFloat(formData.tips) || 0,
       currency: formData.currency,
+      description: formData.description,
     });
 
     if (!error) {
@@ -44,6 +47,7 @@ const SalaryForm = () => {
         base_salary: '',
         tips: '',
         currency: 'USD',
+        description: '',
       });
     }
   };
@@ -144,6 +148,17 @@ const SalaryForm = () => {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="description">Description/Notes (Optional)</Label>
+            <Textarea
+              id="description"
+              placeholder="Add any notes about this salary entry..."
+              value={formData.description}
+              onChange={(e) => handleChange('description', e.target.value)}
+              rows={3}
+            />
           </div>
           
           <Button type="submit" className="w-full">
