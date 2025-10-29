@@ -56,46 +56,48 @@ const StatsOverview = () => {
   ];
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-foreground mb-2">Financial Overview</h2>
-        <p className="text-muted-foreground">Your income performance at a glance</p>
-      </div>
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat, index) => (
-          <Card key={index} className="financial-card border-2 hover:border-primary/20 group">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <CardTitle className="text-sm font-semibold text-muted-foreground group-hover:text-foreground transition-colors">
-                {stat.title}
-              </CardTitle>
-              <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
-                <stat.icon className="h-4 w-4 text-primary" />
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="currency-display text-foreground group-hover:text-primary transition-colors">
-                {stat.value}
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-muted-foreground font-medium">{stat.description}</p>
-                {stat.trend !== undefined && (
-                  <div className={`flex items-center text-xs font-medium px-2 py-1 rounded-full ${
-                    stat.trend >= 0 
-                      ? 'trend-positive bg-green-100 dark:bg-green-900/30' 
-                      : 'trend-negative bg-red-100 dark:bg-red-900/30'
-                  }`}>
-                    {stat.trend >= 0 ? (
-                      <ArrowUp className="h-3 w-3 mr-1" />
-                    ) : (
-                      <ArrowDown className="h-3 w-3 mr-1" />
-                    )}
-                    {Math.abs(stat.trend).toFixed(1)}%
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+    <div className="space-y-6">
+      <div className="p-6">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-foreground mb-2">Financial Overview</h2>
+          <p className="text-muted-foreground">Your income performance at a glance</p>
+        </div>
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          {stats.map((stat, index) => (
+            <Card key={index} className="financial-card border-2 hover:border-primary/20 group">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <CardTitle className="text-sm font-semibold text-muted-foreground group-hover:text-foreground transition-colors">
+                  {stat.title}
+                </CardTitle>
+                <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                  <stat.icon className="h-4 w-4 text-primary" />
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="currency-display text-foreground group-hover:text-primary transition-colors">
+                  {stat.value}
+                </div>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-muted-foreground font-medium">{stat.description}</p>
+                  {stat.trend !== undefined && (
+                    <div className={`flex items-center text-xs font-medium px-2 py-1 rounded-full ${
+                      stat.trend >= 0 
+                        ? 'trend-positive bg-green-100 dark:bg-green-900/30' 
+                        : 'trend-negative bg-red-100 dark:bg-red-900/30'
+                    }`}>
+                      {stat.trend >= 0 ? (
+                        <ArrowUp className="h-3 w-3 mr-1" />
+                      ) : (
+                        <ArrowDown className="h-3 w-3 mr-1" />
+                      )}
+                      {Math.abs(stat.trend).toFixed(1)}%
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   );

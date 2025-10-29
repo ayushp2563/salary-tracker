@@ -7,6 +7,7 @@ import AuthForm from "@/components/AuthForm";
 import Header from "@/components/Header";
 import SalaryForm from "@/components/SalaryForm";
 import TipsForm from "@/components/TipsForm";
+import ExtraHoursForm from "@/components/ExtraHoursForm";
 import StatsOverview from "@/components/StatsOverview";
 import IncomeChart from "@/components/IncomeChart";
 import SalarySummaryOptions from "@/components/SalarySummaryOptions";
@@ -57,8 +58,13 @@ const Index = () => {
             </p>
           </div>
 
-          {/* Stats Overview */}
-          <StatsOverview />
+          {/* Stats Overview and Extra Hours */}
+          <div className="space-y-4 sm:space-y-6">
+            <StatsOverview />
+            <div className="px-6">
+              <ExtraHoursCard />
+            </div>
+          </div>
 
           {/* Main Content Tabs */}
           <Tabs defaultValue="overview" className="w-full">
@@ -80,17 +86,15 @@ const Index = () => {
             <TabsContent value="overview" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
                 <SalaryEntriesList />
-                <div className="space-y-4">
-                  <SalarySummaryOptions />
-                  <ExtraHoursCard />
-                </div>
+                <SalarySummaryOptions />
               </div>
             </TabsContent>
 
             <TabsContent value="add" className="mt-4 sm:mt-6">
-              <div className="grid gap-4 sm:gap-6 lg:grid-cols-2 max-w-6xl mx-auto">
+              <div className="grid gap-4 sm:gap-6 lg:grid-cols-3 max-w-7xl mx-auto">
                 <SalaryForm />
                 <TipsForm />
+                <ExtraHoursForm />
               </div>
             </TabsContent>
 
