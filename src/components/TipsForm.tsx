@@ -29,6 +29,7 @@ const TipsForm = () => {
       start_date: formData.date,
       end_date: formData.date,
       hours_worked: 0,
+      extra_hours: 0,
       base_salary: 0,
       tips: parseFloat(formData.tips),
       currency: formData.currency,

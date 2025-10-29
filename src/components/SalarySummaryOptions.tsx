@@ -31,6 +31,7 @@ const SalarySummaryOptions = () => {
           weekStart: secondWeek ? secondWeek.weekStart : firstWeek.weekStart,
           weekEnd: firstWeek.weekEnd,
           totalHours: firstWeek.totalHours + (secondWeek?.totalHours || 0),
+          totalExtraHours: firstWeek.totalExtraHours + (secondWeek?.totalExtraHours || 0),
           totalIncome: firstWeek.totalIncome + (secondWeek?.totalIncome || 0),
           totalTips: firstWeek.totalTips + (secondWeek?.totalTips || 0),
           entries: [...firstWeek.entries, ...(secondWeek?.entries || [])],

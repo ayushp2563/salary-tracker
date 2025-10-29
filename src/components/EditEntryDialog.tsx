@@ -19,6 +19,7 @@ const EditEntryDialog = ({ entry }: EditEntryDialogProps) => {
     start_date: entry.start_date,
     end_date: entry.end_date,
     hours_worked: entry.hours_worked.toString(),
+    extra_hours: (entry.extra_hours || 0).toString(),
     base_salary: entry.base_salary.toString(),
     tips: entry.tips.toString(),
     currency: entry.currency,
@@ -34,6 +35,7 @@ const EditEntryDialog = ({ entry }: EditEntryDialogProps) => {
       start_date: formData.start_date,
       end_date: formData.end_date,
       hours_worked: parseFloat(formData.hours_worked),
+      extra_hours: parseFloat(formData.extra_hours) || 0,
       base_salary: parseFloat(formData.base_salary),
       tips: parseFloat(formData.tips) || 0,
       currency: formData.currency,
@@ -100,6 +102,20 @@ const EditEntryDialog = ({ entry }: EditEntryDialogProps) => {
                 required
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit_extra_hours">Extra Hours</Label>
+              <Input
+                id="edit_extra_hours"
+                type="number"
+                step="0.5"
+                min="0"
+                value={formData.extra_hours}
+                onChange={(e) => handleChange('extra_hours', e.target.value)}
+              />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="edit_base_salary">Base Salary</Label>
               <Input

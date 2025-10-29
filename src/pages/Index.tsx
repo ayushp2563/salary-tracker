@@ -12,6 +12,7 @@ import IncomeChart from "@/components/IncomeChart";
 import SalarySummaryOptions from "@/components/SalarySummaryOptions";
 import SalarySearch from "@/components/SalarySearch";
 import SalaryEntriesList from "@/components/SalaryEntriesList";
+import { ExtraHoursCard } from "@/components/ExtraHoursCard";
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -79,7 +80,10 @@ const Index = () => {
             <TabsContent value="overview" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
                 <SalaryEntriesList />
-                <SalarySummaryOptions />
+                <div className="space-y-4">
+                  <SalarySummaryOptions />
+                  <ExtraHoursCard />
+                </div>
               </div>
             </TabsContent>
 

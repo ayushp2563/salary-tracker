@@ -11,6 +11,7 @@ export interface SalaryEntry {
   start_date: string;
   end_date: string;
   hours_worked: number;
+  extra_hours: number;
   base_salary: number;
   tips: number;
   currency: string;
@@ -23,6 +24,7 @@ export interface WeeklySummary {
   weekStart: string;
   weekEnd: string;
   totalHours: number;
+  totalExtraHours: number;
   totalIncome: number;
   totalTips: number;
   entries: SalaryEntry[];
@@ -197,6 +199,7 @@ export const useSalaryEntries = () => {
           weekStart: weekStart.toISOString().split('T')[0],
           weekEnd: weekEnd.toISOString().split('T')[0],
           totalHours: 0,
+          totalExtraHours: 0,
           totalIncome: 0,
           totalTips: 0,
           entries: [],
@@ -205,6 +208,7 @@ export const useSalaryEntries = () => {
       
       const week = weekMap.get(weekKey);
       week.totalHours += entry.hours_worked;
+      week.totalExtraHours += entry.extra_hours || 0;
       week.totalIncome += entry.base_salary + entry.tips;
       week.totalTips += entry.tips;
       week.entries.push(entry);

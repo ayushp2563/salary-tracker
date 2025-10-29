@@ -14,6 +14,7 @@ const SalaryForm = () => {
     start_date: '',
     end_date: '',
     hours_worked: '',
+    extra_hours: '',
     base_salary: '',
     tips: '',
     currency: 'USD',
@@ -33,6 +34,7 @@ const SalaryForm = () => {
       start_date: formData.start_date,
       end_date: formData.end_date,
       hours_worked: parseFloat(formData.hours_worked),
+      extra_hours: parseFloat(formData.extra_hours) || 0,
       base_salary: parseFloat(formData.base_salary),
       tips: parseFloat(formData.tips) || 0,
       currency: formData.currency,
@@ -44,6 +46,7 @@ const SalaryForm = () => {
         start_date: '',
         end_date: '',
         hours_worked: '',
+        extra_hours: '',
         base_salary: '',
         tips: '',
         currency: 'USD',
@@ -106,6 +109,21 @@ const SalaryForm = () => {
                 required
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="extra_hours">Extra Hours</Label>
+              <Input
+                id="extra_hours"
+                type="number"
+                step="0.5"
+                min="0"
+                placeholder="0.0"
+                value={formData.extra_hours}
+                onChange={(e) => handleChange('extra_hours', e.target.value)}
+              />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="base_salary">Base Salary</Label>
               <Input

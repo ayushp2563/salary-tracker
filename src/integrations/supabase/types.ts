@@ -48,6 +48,7 @@ export type Database = {
           currency: string
           description: string | null
           end_date: string
+          extra_hours: number | null
           hours_worked: number
           id: string
           start_date: string
@@ -61,6 +62,7 @@ export type Database = {
           currency?: string
           description?: string | null
           end_date: string
+          extra_hours?: number | null
           hours_worked: number
           id?: string
           start_date: string
@@ -74,6 +76,7 @@ export type Database = {
           currency?: string
           description?: string | null
           end_date?: string
+          extra_hours?: number | null
           hours_worked?: number
           id?: string
           start_date?: string
