@@ -14,6 +14,7 @@ import SalarySummaryOptions from "@/components/SalarySummaryOptions";
 import SalarySearch from "@/components/SalarySearch";
 import SalaryEntriesList from "@/components/SalaryEntriesList";
 import { ExtraHoursCard } from "@/components/ExtraHoursCard";
+import { HoursCalculator } from "@/components/HoursCalculator";
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -68,12 +69,15 @@ const Index = () => {
 
           {/* Main Content Tabs */}
           <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto p-1 bg-white dark:bg-gray-800">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 h-auto p-1 bg-white dark:bg-gray-800">
               <TabsTrigger value="overview" className="text-xs sm:text-sm py-2 data-[state=active]:bg-blue-100 dark:data-[state=active]:bg-blue-900">
                 Overview
               </TabsTrigger>
               <TabsTrigger value="add" className="text-xs sm:text-sm py-2 data-[state=active]:bg-blue-100 dark:data-[state=active]:bg-blue-900">
                 Add Entry
+              </TabsTrigger>
+              <TabsTrigger value="calculator" className="text-xs sm:text-sm py-2 data-[state=active]:bg-blue-100 dark:data-[state=active]:bg-blue-900">
+                Hours Calc
               </TabsTrigger>
               <TabsTrigger value="search" className="text-xs sm:text-sm py-2 data-[state=active]:bg-blue-100 dark:data-[state=active]:bg-blue-900">
                 Search
@@ -95,6 +99,12 @@ const Index = () => {
                 <SalaryForm />
                 <TipsForm />
                 <ExtraHoursForm />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="calculator" className="mt-4 sm:mt-6">
+              <div className="max-w-4xl mx-auto">
+                <HoursCalculator />
               </div>
             </TabsContent>
 

@@ -1,1 +1,4 @@
 project_id = "ulwsrrouznidyhzehjxv"
+
+[functions.calculate-hours]
+verify_jwt = false
