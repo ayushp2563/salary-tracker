@@ -11,65 +11,54 @@ serve(async (req) => {
   }
 
   try {
-    const { employmentType, employmentStatus, grossSalary, startDate, endDate } = await req.json();
+    const { employmentType, employmentStatus, netPay, startDate, endDate } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    console.log('Calculating hours for:', { employmentType, employmentStatus, grossSalary, startDate, endDate });
+    console.log('Calculating hours for:', { employmentType, employmentStatus, netPay, startDate, endDate });
 
-    // Build comprehensive prompt with Ontario employment laws and tax considerations
-    const systemPrompt = `You are an expert in Ontario, Canada employment law and payroll calculations. You help calculate the number of hours worked based on bi-weekly gross salary.
+    const systemPrompt = `You are an expert in Ontario, Canada employment law and payroll calculations. You help calculate the number of hours worked based on the net pay (after-tax amount) an employee receives.
 
-Key Ontario Employment Considerations:
-1. Minimum Wage (2024): $16.55/hour general, $15.60/hour for students under 18 working <28 hours/week
-2. VacPay: 4% of gross earnings is included in the gross salary
-3. Taxes and Deductions:
-   - CPP (Canada Pension Plan) Employee: 5.95% on earnings above $3,500 annually
-   - EI (Employment Insurance) Employee: 1.58% on earnings up to $63,200 annually
-   - Federal Income Tax: Progressive rates based on annual income brackets
+Key Information:
+1. Ontario Minimum Wage (October 2025): $17.60/hour (before taxes)
+2. VacPay: 4% of gross earnings is typically included in gross salary
+3. Typical Tax Deductions in Ontario:
+   - CPP (Canada Pension Plan): ~5.95% of gross earnings
+   - EI (Employment Insurance): ~1.58% of gross earnings
+   - Federal Income Tax: Progressive rates
    - Ontario Provincial Tax: Progressive rates
-4. Stat Pay: Ontario has 9 public holidays. If worked, employees get 1.5x pay or premium pay plus day off
-5. Full-time vs Part-time: Different benefit considerations but same minimum wage
-6. Student vs Working Professional: Students under 18 may have different minimum wage
+   - Total deductions typically range from 20-30% for average earners
 
-Calculate the approximate hours worked considering:
-- The gross salary includes VacPay (4%)
-- Deductions reduce take-home but don't affect hours calculation
-- Check if the bi-week period includes any Ontario public holidays
-- Consider the employment type and status for wage rates
+4. Ontario Public Holidays:
+   - New Year's Day, Family Day, Good Friday, Victoria Day, Canada Day, Labour Day, Thanksgiving, Christmas Day, Boxing Day
 
-Ontario Public Holidays:
-- New Year's Day (Jan 1)
-- Family Day (3rd Monday in Feb)
-- Good Friday
-- Victoria Day (Monday before May 25)
-- Canada Day (July 1)
-- Labour Day (1st Monday in Sept)
-- Thanksgiving (2nd Monday in Oct)
-- Christmas Day (Dec 25)
-- Boxing Day (Dec 26)
+Your Task:
+Calculate the approximate hours worked by working backwards from the net pay (after-tax amount) the employee received in their bank account.
 
-Provide a detailed breakdown showing:
-1. Estimated hourly rate
-2. Estimated hours worked
-3. Consideration of VacPay
-4. Whether any stat holidays fall in the period
-5. Brief explanation of calculations`;
+IMPORTANT FORMATTING RULES:
+- Do NOT use asterisks, bullet points, or markdown symbols
+- Use simple numbered lists
+- Use clear headings without special characters
+- Keep explanations simple and easy to understand
+- Format currency clearly with dollar signs`;
 
-    const userPrompt = `Calculate hours worked for:
+    const userPrompt = `Calculate hours worked for an employee who received $${netPay} in their bank account (net pay after all taxes and deductions) for the bi-weekly period from ${startDate} to ${endDate}.
+
+Employment Details:
 - Employment Type: ${employmentType}
 - Employment Status: ${employmentStatus}
-- Bi-weekly Gross Salary: $${grossSalary}
-- Period: ${startDate} to ${endDate}
+- Hourly Rate: $17.60/hour (before taxes)
 
-Provide:
-1. Estimated hourly wage rate
-2. Total hours worked (considering VacPay is included in gross)
-3. Breakdown of calculation
-4. Any stat holiday considerations for this period`;
+Please provide a clear breakdown:
+1. Show the calculation working backwards from net pay to gross pay
+2. Estimate total hours worked
+3. Check if any Ontario public holidays fall in this period
+4. Explain the calculation in simple terms
+
+Remember: Use simple formatting without asterisks or special symbols. Keep the explanation clear and easy to read.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
