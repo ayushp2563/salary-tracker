@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LandingPage from "@/components/LandingPage";
 import AuthForm from "@/components/AuthForm";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import SalaryForm from "@/components/SalaryForm";
 import TipsForm from "@/components/TipsForm";
 import ExtraHoursForm from "@/components/ExtraHoursForm";
@@ -44,10 +45,10 @@ const Index = () => {
 
   // Show dashboard for authenticated users
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col">
       <Header />
       
-      <div className="p-2 sm:p-4 lg:p-6">
+      <div className="p-2 sm:p-4 lg:p-6 flex-1">
         <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
           {/* Header */}
           <div className="text-center space-y-2 sm:space-y-4 py-4 sm:py-8">
@@ -120,6 +121,8 @@ const Index = () => {
           </Tabs>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };

@@ -10,6 +10,7 @@ import { ThemeColorProvider } from "@/contexts/ThemeColorContext";
 import Index from "./pages/Index";
 import Settings from "./pages/Settings";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import { useEffect } from "react";
 
@@ -44,6 +45,7 @@ const App = () => {
                   <Route path="/" element={<Index />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                  <Route path="/terms" element={<Terms />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

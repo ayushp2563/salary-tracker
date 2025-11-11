@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { ColorPicker } from '@/components/ColorPicker';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import Footer from '@/components/Footer';
 import { ArrowLeft, User, Palette, Moon, Sun, Download, Shield, Mail, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,7 +25,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -38,7 +39,7 @@ const Settings = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 py-8 max-w-4xl flex-1">
         <div className="space-y-8">
           {/* Profile Section */}
           <Card className="border-2">
@@ -164,6 +165,8 @@ const Settings = () => {
           </Card>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };
