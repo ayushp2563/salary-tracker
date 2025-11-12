@@ -1,0 +1,27 @@
+{
+  "name": "salary-tracker-mcp-server",
+  "version": "1.0.0",
+  "description": "Model Context Protocol server for Salary Tracker app",
+  "type": "module",
+  "main": "index.ts",
+  "bin": {
+    "salary-tracker-mcp": "./index.ts"
+  },
+  "scripts": {
+    "build": "tsc && node -e \"require('fs').chmodSync('dist/index.js', '755')\"",
+    "start": "node dist/index.js",
+    "dev": "tsx index.ts"
+  },
+  "keywords": ["mcp", "salary", "tracker", "modelcontextprotocol"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@supabase/supabase-js": "^2.50.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
