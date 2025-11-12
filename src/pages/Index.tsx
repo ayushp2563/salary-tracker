@@ -1,7 +1,6 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LandingPage from "@/components/LandingPage";
 import AuthForm from "@/components/AuthForm";
 import Header from "@/components/Header";
@@ -16,10 +15,15 @@ import SalarySearch from "@/components/SalarySearch";
 import SalaryEntriesList from "@/components/SalaryEntriesList";
 import { ExtraHoursCard } from "@/components/ExtraHoursCard";
 import { HoursCalculator } from "@/components/HoursCalculator";
+import { AppSidebar } from "@/components/AppSidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { IncomeHoursWidget } from "@/components/widgets/IncomeHoursWidget";
+import { AnalyticsWidget } from "@/components/widgets/AnalyticsWidget";
 
 const Index = () => {
   const { user, loading } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
 
   // Show loading state while checking authentication
   if (loading) {
@@ -45,85 +49,90 @@ const Index = () => {
 
   // Show dashboard for authenticated users
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col">
-      <Header />
-      
-      <div className="p-2 sm:p-4 lg:p-6 flex-1">
-        <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
-          {/* Header */}
-          <div className="text-center space-y-2 sm:space-y-4 py-4 sm:py-8">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
-              Salary Tracker
-            </h1>
-            <p className="text-sm sm:text-base lg:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4">
-              Track your earnings, monitor trends, and manage your income with ease
-            </p>
-          </div>
+    <SidebarProvider>
+      <div className="min-h-screen w-full flex bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <AppSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        
+        <div className="flex-1 flex flex-col">
+          <Header />
+          
+          <div className="p-2 sm:p-4 lg:p-6 flex-1">
+            <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
+              {/* Mobile Sidebar Trigger */}
+              <div className="lg:hidden">
+                <SidebarTrigger />
+              </div>
 
-          {/* Stats Overview and Extra Hours */}
-          <div className="space-y-4 sm:space-y-6">
-            <StatsOverview />
-            <div className="px-6">
-              <ExtraHoursCard />
+              {/* Header */}
+              <div className="text-center space-y-2 sm:space-y-4 py-4 sm:py-8">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
+                  Salary Tracker
+                </h1>
+                <p className="text-sm sm:text-base lg:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4">
+                  Track your earnings, monitor trends, and manage your income with ease
+                </p>
+              </div>
+
+              {/* Widgets Section */}
+              {activeTab === "overview" && (
+                <div className="grid gap-4 sm:gap-6 md:grid-cols-2 mb-6">
+                  <IncomeHoursWidget />
+                  <AnalyticsWidget />
+                </div>
+              )}
+
+              {/* Stats Overview and Extra Hours */}
+              {activeTab === "overview" && (
+                <div className="space-y-4 sm:space-y-6">
+                  <StatsOverview />
+                  <div className="px-6">
+                    <ExtraHoursCard />
+                  </div>
+                </div>
+              )}
+
+              {/* Main Content */}
+              <div className="mt-4 sm:mt-6">
+                {activeTab === "overview" && (
+                  <div className="space-y-4 sm:space-y-6">
+                    <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+                      <SalaryEntriesList />
+                      <SalarySummaryOptions />
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === "add" && (
+                  <div className="grid gap-4 sm:gap-6 lg:grid-cols-3 max-w-7xl mx-auto">
+                    <SalaryForm />
+                    <TipsForm />
+                    <ExtraHoursForm />
+                  </div>
+                )}
+
+                {activeTab === "calculator" && (
+                  <div className="max-w-4xl mx-auto">
+                    <HoursCalculator />
+                  </div>
+                )}
+
+                {activeTab === "search" && (
+                  <div className="max-w-4xl mx-auto">
+                    <SalarySearch />
+                  </div>
+                )}
+
+                {activeTab === "analytics" && (
+                  <IncomeChart />
+                )}
+              </div>
             </div>
           </div>
-
-          {/* Main Content Tabs */}
-          <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 h-auto p-1 bg-white dark:bg-gray-800">
-              <TabsTrigger value="overview" className="text-xs sm:text-sm py-2 data-[state=active]:bg-blue-100 dark:data-[state=active]:bg-blue-900">
-                Overview
-              </TabsTrigger>
-              <TabsTrigger value="add" className="text-xs sm:text-sm py-2 data-[state=active]:bg-blue-100 dark:data-[state=active]:bg-blue-900">
-                Add Entry
-              </TabsTrigger>
-              <TabsTrigger value="calculator" className="text-xs sm:text-sm py-2 data-[state=active]:bg-blue-100 dark:data-[state=active]:bg-blue-900">
-                Hours Calc
-              </TabsTrigger>
-              <TabsTrigger value="search" className="text-xs sm:text-sm py-2 data-[state=active]:bg-blue-100 dark:data-[state=active]:bg-blue-900">
-                Search
-              </TabsTrigger>
-              <TabsTrigger value="analytics" className="text-xs sm:text-sm py-2 data-[state=active]:bg-blue-100 dark:data-[state=active]:bg-blue-900">
-                Analytics
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="overview" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
-              <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-                <SalaryEntriesList />
-                <SalarySummaryOptions />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="add" className="mt-4 sm:mt-6">
-              <div className="grid gap-4 sm:gap-6 lg:grid-cols-3 max-w-7xl mx-auto">
-                <SalaryForm />
-                <TipsForm />
-                <ExtraHoursForm />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="calculator" className="mt-4 sm:mt-6">
-              <div className="max-w-4xl mx-auto">
-                <HoursCalculator />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="search" className="mt-4 sm:mt-6">
-              <div className="max-w-4xl mx-auto">
-                <SalarySearch />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="analytics" className="mt-4 sm:mt-6">
-              <IncomeChart />
-            </TabsContent>
-          </Tabs>
+          
+          <Footer />
         </div>
       </div>
-      
-      <Footer />
-    </div>
+    </SidebarProvider>
   );
 };
 
