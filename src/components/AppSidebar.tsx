@@ -1,4 +1,4 @@
-import { Home, PlusCircle, Calculator, Search, BarChart3, Settings, DollarSign } from "lucide-react";
+import { Home, PlusCircle, Calculator, Search, BarChart3, Settings, DollarSign, Clock } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 import {
@@ -17,6 +17,7 @@ import {
 const menuItems = [
   { title: "Overview", icon: Home, tab: "overview" },
   { title: "Add Entry", icon: PlusCircle, tab: "add" },
+  { title: "Daily Hours", icon: Clock, tab: "daily-hours" },
   { title: "Hours Calculator", icon: Calculator, tab: "calculator" },
   { title: "Search", icon: Search, tab: "search" },
   { title: "Analytics", icon: BarChart3, tab: "analytics" },

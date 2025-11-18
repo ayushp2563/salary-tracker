@@ -15,6 +15,9 @@ import SalarySearch from "@/components/SalarySearch";
 import SalaryEntriesList from "@/components/SalaryEntriesList";
 import { ExtraHoursCard } from "@/components/ExtraHoursCard";
 import { HoursCalculator } from "@/components/HoursCalculator";
+import { DailyHoursForm } from "@/components/DailyHoursForm";
+import { DailyHoursList } from "@/components/DailyHoursList";
+import { NotificationSettings } from "@/components/NotificationSettings";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { IncomeHoursWidget } from "@/components/widgets/IncomeHoursWidget";
@@ -124,6 +127,16 @@ const Index = () => {
 
                 {activeTab === "analytics" && (
                   <IncomeChart />
+                )}
+
+                {activeTab === "daily-hours" && (
+                  <div className="space-y-6">
+                    <div className="grid gap-6 md:grid-cols-2">
+                      <DailyHoursForm />
+                      <NotificationSettings />
+                    </div>
+                    <DailyHoursList />
+                  </div>
                 )}
               </div>
             </div>

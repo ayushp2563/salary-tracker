@@ -52,6 +52,18 @@
       ]
     },
     {
+      "name": "Log Daily Hours",
+      "short_name": "Log Hours",
+      "description": "Log your daily work hours",
+      "url": "/?tab=daily-hours",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
       "name": "Analytics",
       "short_name": "Analytics",
       "description": "View income analytics and charts",

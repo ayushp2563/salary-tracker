@@ -1,4 +1,4 @@
-const CACHE_NAME = 'salary-tracker-v1.0.0';
+const CACHE_NAME = 'salary-tracker-v1.1.0';
 const urlsToCache = [
   '/',
   '/static/js/bundle.js',
@@ -57,30 +57,49 @@ self.addEventListener('sync', (event) => {
 
 // Push notification handling
 self.addEventListener('push', (event) => {
+  const data = event.data ? event.data.json() : {};
   const options = {
-    body: event.data ? event.data.text() : 'New update available',
+    body: data.body || 'Don\'t forget to log your hours for today!',
     icon: '/icon-192.png',
     badge: '/icon-192.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
-      primaryKey: 1
+      primaryKey: 1,
+      url: data.url || '/?tab=daily-hours'
     },
     actions: [
       {
-        action: 'explore',
-        title: 'Open App',
+        action: 'log-hours',
+        title: 'Log Hours',
         icon: '/icon-192.png'
       },
       {
-        action: 'close',
-        title: 'Close',
+        action: 'dismiss',
+        title: 'Dismiss',
         icon: '/icon-192.png'
       }
-    ]
+    ],
+    requireInteraction: false,
+    tag: 'daily-reminder'
   };
 
   event.waitUntil(
-    self.registration.showNotification('Salary Tracker', options)
+    self.registration.showNotification(data.title || 'Salary Tracker Reminder', options)
   );
+});
+
+// Notification click handling
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  if (event.action === 'log-hours') {
+    event.waitUntil(
+      clients.openWindow(event.notification.data.url || '/?tab=daily-hours')
+    );
+  } else if (event.action !== 'dismiss') {
+    event.waitUntil(
+      clients.openWindow('/')
+    );
+  }
 });

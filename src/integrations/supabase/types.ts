@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      daily_hours: {
+        Row: {
+          created_at: string
+          date: string
+          description: string | null
+          hours_worked: number
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          description?: string | null
+          hours_worked: number
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          description?: string | null
+          hours_worked?: number
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -21,6 +51,8 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          notification_time: string | null
+          notifications_enabled: boolean | null
           updated_at: string
         }
         Insert: {
@@ -29,6 +61,8 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          notification_time?: string | null
+          notifications_enabled?: boolean | null
           updated_at?: string
         }
         Update: {
@@ -37,6 +71,8 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          notification_time?: string | null
+          notifications_enabled?: boolean | null
           updated_at?: string
         }
         Relationships: []
