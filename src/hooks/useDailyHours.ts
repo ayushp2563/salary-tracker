@@ -13,6 +13,44 @@ export interface DailyHours {
   updated_at: string;
 }
 
+// Singleton channel management
+let activeChannel: any = null;
+let subscriberCount = 0;
+const listeners: Set<() => void> = new Set();
+
+const setupRealtimeSubscription = (userId: string) => {
+  if (activeChannel) return;
+
+  console.log('Setting up daily hours real-time subscription for user:', userId);
+  
+  activeChannel = supabase
+    .channel(`daily_hours_${userId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'daily_hours',
+        filter: `user_id=eq.${userId}`,
+      },
+      (payload) => {
+        console.log('Daily hours real-time update received:', payload);
+        // Notify all listeners
+        listeners.forEach(listener => listener());
+      }
+    )
+    .subscribe();
+};
+
+const cleanupRealtimeSubscription = () => {
+  if (subscriberCount === 0 && activeChannel) {
+    console.log('Cleaning up daily hours real-time subscription');
+    supabase.removeChannel(activeChannel);
+    activeChannel = null;
+    listeners.clear();
+  }
+};
+
 export const useDailyHours = () => {
   const [dailyHours, setDailyHours] = useState<DailyHours[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,29 +85,26 @@ export const useDailyHours = () => {
   };
 
   useEffect(() => {
+    if (!user) return;
+
+    subscriberCount++;
+    console.log('Daily hours subscriber count:', subscriberCount);
+
     fetchDailyHours();
 
-    // Real-time subscription
-    const channel = supabase
-      .channel('daily_hours_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'daily_hours',
-          filter: `user_id=eq.${user?.id}`,
-        },
-        () => {
-          fetchDailyHours();
-        }
-      )
-      .subscribe();
+    // Add listener for this component
+    listeners.add(fetchDailyHours);
+
+    // Setup subscription if not already active
+    setupRealtimeSubscription(user.id);
 
     return () => {
-      supabase.removeChannel(channel);
+      subscriberCount--;
+      console.log('Daily hours subscriber count after cleanup:', subscriberCount);
+      listeners.delete(fetchDailyHours);
+      cleanupRealtimeSubscription();
     };
-  }, [user]);
+  }, [user?.id]);
 
   const addDailyHours = async (data: Omit<DailyHours, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     if (!user) return { error: 'User not authenticated' };
