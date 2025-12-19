@@ -27,25 +27,29 @@ import { MobileBottomNav } from "@/components/MobileBottomNav";
 
 // Separate component to use useSidebar hook inside SidebarProvider
 const MenuTrigger = () => {
-  const { openMobile, setOpenMobile } = useSidebar();
+  const { open, setOpen, openMobile, setOpenMobile, isMobile } = useSidebar();
+  
+  const isOpen = isMobile ? openMobile : open;
   
   const toggleSidebar = () => {
-    setOpenMobile(!openMobile);
+    if (isMobile) {
+      setOpenMobile(!openMobile);
+    } else {
+      setOpen(!open);
+    }
   };
   
   return (
-    <div className="lg:hidden">
-      <button
-        onClick={toggleSidebar}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-primary border border-primary/20"
-      >
-        {openMobile ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        <span className="font-medium">Menus</span>
-        <span className="text-xs text-muted-foreground ml-1">
-          {openMobile ? "tap to close" : "tap to open"}
-        </span>
-      </button>
-    </div>
+    <button
+      onClick={toggleSidebar}
+      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-primary border border-primary/20"
+    >
+      {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+      <span className="font-medium">Menus</span>
+      <span className="text-xs text-muted-foreground ml-1">
+        {isOpen ? "tap to close" : "tap to open"}
+      </span>
+    </button>
   );
 };
 
@@ -87,7 +91,7 @@ const Index = () => {
           
           <div className="p-2 sm:p-4 lg:p-6 flex-1 pb-20 lg:pb-6">
             <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
-              {/* Mobile Sidebar Trigger */}
+              {/* Sidebar Trigger */}
               <MenuTrigger />
 
               {/* Header */}
