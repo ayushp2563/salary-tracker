@@ -20,23 +20,30 @@ import { DailyHoursList } from "@/components/DailyHoursList";
 import { NotificationSettings } from "@/components/NotificationSettings";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { IncomeHoursWidget } from "@/components/widgets/IncomeHoursWidget";
 import { AnalyticsWidget } from "@/components/widgets/AnalyticsWidget";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 
 // Separate component to use useSidebar hook inside SidebarProvider
 const MenuTrigger = () => {
-  const { setOpenMobile } = useSidebar();
+  const { openMobile, setOpenMobile } = useSidebar();
+  
+  const toggleSidebar = () => {
+    setOpenMobile(!openMobile);
+  };
   
   return (
     <div className="lg:hidden">
       <button
-        onClick={() => setOpenMobile(true)}
+        onClick={toggleSidebar}
         className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-primary border border-primary/20"
       >
-        <Menu className="h-5 w-5" />
+        {openMobile ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         <span className="font-medium">Menus</span>
-        <span className="text-xs text-muted-foreground ml-1">tap to open</span>
+        <span className="text-xs text-muted-foreground ml-1">
+          {openMobile ? "tap to close" : "tap to open"}
+        </span>
       </button>
     </div>
   );
@@ -78,7 +85,7 @@ const Index = () => {
         <div className="flex-1 flex flex-col">
           <Header />
           
-          <div className="p-2 sm:p-4 lg:p-6 flex-1">
+          <div className="p-2 sm:p-4 lg:p-6 flex-1 pb-20 lg:pb-6">
             <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
               {/* Mobile Sidebar Trigger */}
               <MenuTrigger />
@@ -160,6 +167,7 @@ const Index = () => {
           </div>
           
           <Footer />
+          <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
       </div>
     </SidebarProvider>
