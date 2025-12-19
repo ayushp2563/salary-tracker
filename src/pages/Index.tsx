@@ -61,9 +61,10 @@ const Index = () => {
           
           <div className="p-2 sm:p-4 lg:p-6 flex-1">
             <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
-              {/* Mobile Sidebar Trigger */}
-              <div className="lg:hidden">
+              {/* Mobile Sidebar Trigger with Menu Label */}
+              <div className="lg:hidden flex items-center gap-2 p-2 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 w-fit">
                 <SidebarTrigger />
+                <span className="text-sm font-medium text-muted-foreground">Menu</span>
               </div>
 
               {/* Header */}
