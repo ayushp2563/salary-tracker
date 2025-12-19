@@ -1,4 +1,4 @@
-import { Home, PlusCircle, Calculator, Search, BarChart3, Settings, DollarSign, Clock } from "lucide-react";
+import { Home, PlusCircle, Calculator, Search, BarChart3, Settings, DollarSign, Clock, Menu } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 import {
@@ -10,7 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
+  SidebarHeader,
   useSidebar,
 } from "@/components/ui/sidebar";
 
@@ -41,11 +41,22 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
 
   return (
     <Sidebar collapsible="icon" className="border-r">
+      <SidebarHeader className="border-b border-border/40 px-2 py-3">
+        <div className="flex items-center gap-2">
+          <DollarSign className="h-5 w-5 text-primary" />
+          {open && (
+            <div className="flex flex-col">
+              <span className="font-semibold text-sm">Salary Tracker</span>
+              <span className="text-[10px] text-muted-foreground">Tap to navigate</span>
+            </div>
+          )}
+        </div>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>
-            <DollarSign className="mr-2 h-4 w-4" />
-            {open && "Salary Tracker"}
+          <SidebarGroupLabel className="flex items-center gap-1.5">
+            <Menu className="h-3 w-3" />
+            {open && "Menu"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
