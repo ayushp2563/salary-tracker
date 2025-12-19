@@ -29,8 +29,15 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
-  const { open } = useSidebar();
+  const { open, setOpenMobile, isMobile } = useSidebar();
   const location = useLocation();
+
+  const handleTabChange = (tab: string) => {
+    onTabChange(tab);
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
 
   return (
     <Sidebar collapsible="icon" className="border-r">
@@ -45,7 +52,7 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
-                    onClick={() => onTabChange(item.tab)}
+                    onClick={() => handleTabChange(item.tab)}
                     isActive={activeTab === item.tab}
                     tooltip={item.title}
                   >
@@ -59,6 +66,7 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
                   asChild
                   isActive={location.pathname === "/settings"}
                   tooltip="Settings"
+                  onClick={() => isMobile && setOpenMobile(false)}
                 >
                   <Link to="/settings">
                     <Settings className="h-4 w-4" />
