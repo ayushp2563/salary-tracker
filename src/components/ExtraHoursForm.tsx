@@ -5,13 +5,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Clock } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Clock, CalendarIcon } from 'lucide-react';
 import { useSalaryEntries } from '@/hooks/useSalaryEntries';
 import { toast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
+import { DateRange } from 'react-day-picker';
 
 const ExtraHoursForm = () => {
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [formData, setFormData] = useState({
-    date: '',
     extra_hours: '',
     description: '',
     currency: 'USD',
@@ -22,13 +27,21 @@ const ExtraHoursForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.date || !formData.extra_hours) {
+    if (!dateRange?.from || !formData.extra_hours) {
+      toast({
+        title: "Error",
+        description: "Please select a date and enter extra hours",
+        variant: "destructive",
+      });
       return;
     }
 
+    const startDate = format(dateRange.from, 'yyyy-MM-dd');
+    const endDate = dateRange.to ? format(dateRange.to, 'yyyy-MM-dd') : startDate;
+
     const { error } = await addEntry({
-      start_date: formData.date,
-      end_date: formData.date,
+      start_date: startDate,
+      end_date: endDate,
       hours_worked: 0,
       extra_hours: parseFloat(formData.extra_hours),
       base_salary: 0,
@@ -42,8 +55,8 @@ const ExtraHoursForm = () => {
         title: "Success",
         description: "Extra hours added successfully",
       });
+      setDateRange(undefined);
       setFormData({
-        date: '',
         extra_hours: '',
         description: '',
         currency: 'USD',
@@ -63,20 +76,47 @@ const ExtraHoursForm = () => {
           Add Extra Hours
         </CardTitle>
         <CardDescription>
-          Record overtime or additional work hours
+          Record overtime or additional work hours for a single day or date range
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="date">Date</Label>
-            <Input
-              id="date"
-              type="date"
-              value={formData.date}
-              onChange={(e) => handleChange('date', e.target.value)}
-              required
-            />
+            <Label>Date or Date Range</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !dateRange?.from && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {dateRange?.from ? (
+                    dateRange.to ? (
+                      <>
+                        {format(dateRange.from, "MMM dd, yyyy")} - {format(dateRange.to, "MMM dd, yyyy")}
+                      </>
+                    ) : (
+                      format(dateRange.from, "MMM dd, yyyy")
+                    )
+                  ) : (
+                    <span>Select date(s)</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="range"
+                  selected={dateRange}
+                  onSelect={setDateRange}
+                  numberOfMonths={1}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
           </div>
           
           <div className="space-y-2">
