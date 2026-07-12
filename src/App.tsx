@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeColorProvider } from "@/contexts/ThemeColorContext";
+import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import Index from "./pages/Index";
 import Settings from "./pages/Settings";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -20,42 +20,62 @@ const App = () => {
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return;
 
+    const resetStaleWorkers = async () => {
+      try {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        const keys = await caches.keys();
+        const hasLegacyCache = keys.some((k) => k.startsWith('salary-tracker-v1'));
+        if (hasLegacyCache) {
+          await Promise.all(regs.map((r) => r.unregister()));
+          await Promise.all(keys.map((k) => caches.delete(k)));
+        }
+      } catch {
+        // ignore
+      }
+    };
+
     const onLoad = () => {
-      navigator.serviceWorker
-        .register(`${import.meta.env.BASE_URL}sw.js`)
-        .then((registration) => {
-          registration.update().catch(() => undefined);
-        })
-        .catch(() => undefined);
+      resetStaleWorkers().finally(() => {
+        const swPath = `${import.meta.env.BASE_URL}sw.js`.replace(/\/{2,}(?!\/)/g, '/');
+        navigator.serviceWorker
+          .register(swPath)
+          .then((registration) => {
+            registration.update().catch(() => undefined);
+          })
+          .catch(() => undefined);
+      });
     };
 
     window.addEventListener('load', onLoad);
     return () => window.removeEventListener('load', onLoad);
   }, []);
 
+  const basename = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') || undefined;
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="system" storageKey="salary-tracker-theme">
-        <ThemeColorProvider defaultColor="teal" storageKey="salary-tracker-theme-color">
-          <TooltipProvider>
-            <AuthProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '') || undefined}>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                  <Route path="/terms" element={<Terms />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </AuthProvider>
-          </TooltipProvider>
-        </ThemeColorProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <AppErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider defaultTheme="system" storageKey="salary-tracker-theme">
+          <ThemeColorProvider defaultColor="teal" storageKey="salary-tracker-theme-color">
+            <TooltipProvider>
+              <AuthProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter basename={basename}>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </BrowserRouter>
+              </AuthProvider>
+            </TooltipProvider>
+          </ThemeColorProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </AppErrorBoundary>
   );
 };
 

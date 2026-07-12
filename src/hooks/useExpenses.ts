@@ -7,12 +7,12 @@ import type { SalaryEntry } from '@/hooks/useSalaryEntries';
 import {
   clearLocalExpenses,
   expenseToSalaryInsert,
-  isExpenseSalaryEntry,
   parseExpenseFromSalaryEntry,
   readLocalExpenses,
   EXPENSE_MARKER,
   encodeExpenseDescription,
 } from '@/lib/expenseStorage';
+import { subscribeToTable } from '@/lib/realtime';
 
 type ExpenseInput = Omit<Expense, 'id' | 'user_id' | 'created_at' | 'updated_at'>;
 type BackendMode = 'table' | 'salary_entries' | 'unknown';
@@ -161,30 +161,19 @@ export const useExpenses = () => {
     fetchExpenses();
   }, [fetchExpenses]);
 
-  // Realtime sync for whichever backend is active
+  // Realtime sync for whichever backend is active (shared channel — safe with multiple hook users)
   useEffect(() => {
     if (!user || backend === 'unknown') return;
 
     const table = backend === 'table' ? 'expenses' : 'salary_entries';
-    const channel = supabase
-      .channel(`expenses-sync-${user.id}-${backend}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table,
-          filter: `user_id=eq.${user.id}`,
-        },
-        () => {
-          fetchExpenses();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return subscribeToTable({
+      name: `expenses_shared_${user.id}_${backend}`,
+      table,
+      filter: `user_id=eq.${user.id}`,
+      onEvent: () => {
+        fetchExpenses();
+      },
+    });
   }, [user, backend, fetchExpenses]);
 
   const addExpense = async (input: ExpenseInput) => {

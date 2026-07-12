@@ -39,11 +39,33 @@
     <meta name="twitter:title" content="Salary Tracker — Student income & expenses" />
     <meta name="twitter:description" content="Track salary, tips, and campus expenses for students in Canada and the US." />
     <meta name="twitter:image" content="/icon-512.png" />
-    <meta name="salary-tracker-build" content="2026-07-12-student-expenses" />
+    <meta name="salary-tracker-build" content="2026-07-12-white-screen-fix" />
   </head>
 
   <body>
     <div id="root"></div>
+    <script>
+      // Emergency cleanup for stale service workers that can blank the app after deploys
+      (function () {
+        try {
+          if (!('serviceWorker' in navigator)) return;
+          var params = new URLSearchParams(window.location.search);
+          if (params.get('reset_sw') === '1') {
+            navigator.serviceWorker.getRegistrations().then(function (regs) {
+              return Promise.all(regs.map(function (r) { return r.unregister(); }));
+            }).then(function () {
+              return caches.keys();
+            }).then(function (keys) {
+              return Promise.all(keys.map(function (k) { return caches.delete(k); }));
+            }).then(function () {
+              params.delete('reset_sw');
+              var next = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+              window.location.replace(next || '/');
+            });
+          }
+        } catch (e) {}
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
