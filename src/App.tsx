@@ -22,7 +22,7 @@ const App = () => {
 
     const onLoad = () => {
       navigator.serviceWorker
-        .register('/sw.js')
+        .register(`${import.meta.env.BASE_URL}sw.js`)
         .then((registration) => {
           registration.update().catch(() => undefined);
         })
@@ -41,7 +41,7 @@ const App = () => {
             <AuthProvider>
               <Toaster />
               <Sonner />
-              <BrowserRouter>
+              <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '') || undefined}>
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/settings" element={<Settings />} />
