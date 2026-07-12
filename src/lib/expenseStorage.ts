@@ -13,7 +13,7 @@ export type ExpensePayload = {
 
 export const isExpenseSalaryEntry = (entry: Pick<SalaryEntry, 'description' | 'hours_worked'>) => {
   const desc = entry.description || '';
-  return desc.startsWith(EXPENSE_MARKER) || Number(entry.hours_worked) === -1;
+  return desc.startsWith(EXPENSE_MARKER);
 };
 
 export const encodeExpenseDescription = (payload: ExpensePayload) =>
@@ -60,7 +60,7 @@ export const expenseToSalaryInsert = (
   user_id: userId,
   start_date: expense.expense_date,
   end_date: expense.expense_date,
-  hours_worked: -1,
+  hours_worked: 0,
   extra_hours: 0,
   base_salary: 0,
   tips: Number(expense.amount) || 0,

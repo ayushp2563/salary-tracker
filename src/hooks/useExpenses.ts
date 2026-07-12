@@ -273,7 +273,7 @@ export const useExpenses = () => {
           end_date: next.expense_date,
           tips: Number(next.amount) || 0,
           currency: next.currency,
-          hours_worked: -1,
+          hours_worked: 0,
           base_salary: 0,
           extra_hours: 0,
           description: encodeExpenseDescription({
