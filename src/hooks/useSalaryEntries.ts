@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { useRealtimeSync } from './useRealtimeSync';
+import { isExpenseSalaryEntry } from '@/lib/expenseStorage';
 
 export interface SalaryEntry {
   id: string;
@@ -56,7 +57,8 @@ export const useSalaryEntries = () => {
       }
       
       console.log('Fetched entries:', data?.length);
-      setEntries(data || []);
+      const incomeEntries = (data || []).filter((entry) => !isExpenseSalaryEntry(entry));
+      setEntries(incomeEntries);
     } catch (error: any) {
       console.error('Error fetching salary entries:', error);
       toast({
@@ -75,10 +77,15 @@ export const useSalaryEntries = () => {
 
   // Real-time sync callbacks
   const handleInsert = useCallback((entry: SalaryEntry) => {
+    if (isExpenseSalaryEntry(entry)) return;
     setEntries((prev) => [entry, ...prev]);
   }, []);
 
   const handleUpdate = useCallback((entry: SalaryEntry) => {
+    if (isExpenseSalaryEntry(entry)) {
+      setEntries((prev) => prev.filter((existingEntry) => existingEntry.id !== entry.id));
+      return;
+    }
     setEntries((prev) =>
       prev.map((existingEntry) =>
         existingEntry.id === entry.id ? entry : existingEntry
