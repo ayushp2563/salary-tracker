@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowUp, BarChart, TrendingUp, DollarSign, Users, Calendar, Star } from 'lucide-react';
+import { ArrowUpRight, BarChart3, Clock3, GraduationCap, Receipt, Wallet } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface LandingPageProps {
@@ -12,130 +12,106 @@ interface LandingPageProps {
 const LandingPage = ({ onGetStarted }: LandingPageProps) => {
   const features = [
     {
-      icon: DollarSign,
-      title: "Track Your Earnings",
-      description: "Monitor your salary, tips, and total income with precision and ease."
+      icon: Wallet,
+      title: 'Tips vs bank pools',
+      description: 'Know what is left in tip cash versus paycheque money after each purchase.',
     },
     {
-      icon: BarChart,
-      title: "Detailed Analytics",
-      description: "Get comprehensive insights into your earning patterns and trends."
+      icon: Receipt,
+      title: 'Expense tracker',
+      description: 'Name every purchase, search instantly, and tag rent, transit, textbooks, and more.',
     },
     {
-      icon: TrendingUp,
-      title: "Growth Tracking",
-      description: "Watch your income grow over time with weekly and monthly summaries."
+      icon: GraduationCap,
+      title: 'Student work-hour guard',
+      description: 'Stay under Canada/US international student weekly hour caps while you study.',
     },
     {
-      icon: Calendar,
-      title: "Time Management",
-      description: "Track hours worked and calculate your effective hourly rate."
+      icon: Clock3,
+      title: 'Shift & deposit tools',
+      description: 'Log daily hours and estimate hours from bi-weekly bank deposits.',
     },
     {
-      icon: Users,
-      title: "Secure & Private",
-      description: "Your financial data is encrypted and stored securely with Supabase."
+      icon: BarChart3,
+      title: 'Clear money insights',
+      description: 'See income, spending, and net balance without clutter or fake “enterprise” noise.',
     },
     {
-      icon: Star,
-      title: "Real-time Updates",
-      description: "See your data update instantly across all your devices."
-    }
-  ];
-
-  const testimonials = [
-    {
-      name: "Sarah Johnson",
-      role: "Freelance Designer",
-      content: "This app has completely transformed how I track my income. The insights are invaluable!"
+      icon: ArrowUpRight,
+      title: 'Built for campus life',
+      description: 'CAD/USD ready categories for rent, transit passes, groceries, and tuition fees.',
     },
-    {
-      name: "Mike Chen",
-      role: "Restaurant Server",
-      content: "Perfect for tracking tips and hours. I can finally see my earning patterns clearly."
-    },
-    {
-      name: "Emma Davis",
-      role: "Consultant",
-      content: "The analytics feature helps me make better decisions about my rates and time."
-    }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-card to-muted">
-      {/* Header */}
-      <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <DollarSign className="h-6 w-6 text-primary" />
+    <div className="min-h-screen bg-app-canvas">
+      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
+        <div className="container mx-auto flex items-center justify-between px-4 py-4">
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-primary/15 p-2">
+              <Wallet className="h-6 w-6 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              Salary Tracker
-            </h1>
+            <span className="font-display text-2xl font-bold tracking-tight">Salary Tracker</span>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Button onClick={onGetStarted} className="financial-gradient text-white hover:opacity-90 shadow-lg">
-              Get Started
-            </Button>
+            <Button onClick={onGetStarted}>Get started</Button>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto text-center">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary/70 bg-clip-text text-transparent leading-tight">
-              Professional Financial Management
-            </h2>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
-              Enterprise-grade salary tracking with advanced analytics, real-time insights, 
-              and intelligent reporting for modern professionals.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
-                onClick={onGetStarted}
-                className="financial-gradient text-white px-8 py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300"
-              >
-                Start Tracking Now
-                <ArrowUp className="ml-2 h-5 w-5" />
-              </Button>
-              <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-2 border-primary/20 hover:border-primary/40">
-                View Demo
-              </Button>
-            </div>
+      <section className="relative overflow-hidden px-4 pb-16 pt-16 sm:pt-24">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_hsla(173,60%,45%,0.18),_transparent_55%)]" />
+        <div className="pointer-events-none absolute -right-20 top-20 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl" />
+        <div className="container relative mx-auto max-w-4xl text-center">
+          <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-primary">
+            For students in Canada & the US
+          </p>
+          <h1 className="font-display text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl animate-fade-up">
+            Salary Tracker
+          </h1>
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl animate-fade-up" style={{ animationDelay: '80ms' }}>
+            Track paycheques, tips, and campus expenses in one calm dashboard — and always know
+            whether you spent from tips or bank income.
+          </p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row animate-fade-up" style={{ animationDelay: '140ms' }}>
+            <Button size="lg" onClick={onGetStarted} className="min-w-44">
+              Start free
+            </Button>
+            <Button size="lg" variant="outline" onClick={onGetStarted} className="min-w-44">
+              Sign in
+            </Button>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 px-4 bg-card/30">
+      <section className="px-4 py-16">
         <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Professional Features
-            </h3>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Enterprise-grade tools designed for financial professionals and individuals who demand excellence
+          <div className="mb-10 max-w-2xl">
+            <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
+              Money tools that match student life
+            </h2>
+            <p className="mt-3 text-muted-foreground">
+              Less clutter. More clarity on hours, tips, rent, and what you can still spend.
             </p>
           </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {features.map((feature, index) => (
-              <Card key={index} className="financial-card hover:shadow-xl transition-all duration-300 group">
+              <Card
+                key={feature.title}
+                className="border-border/60 bg-card/70 backdrop-blur-sm transition-transform duration-300 hover:-translate-y-1 animate-fade-up"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
                 <CardHeader>
-                  <div className="flex items-center space-x-3">
-                    <div className="p-3 financial-gradient rounded-xl group-hover:scale-110 transition-transform duration-300">
-                      <feature.icon className="h-6 w-6 text-white" />
-                    </div>
-                    <CardTitle className="text-xl font-semibold">{feature.title}</CardTitle>
+                  <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
+                    <feature.icon className="h-5 w-5 text-primary" />
                   </div>
+                  <CardTitle className="font-display text-xl">{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-base leading-relaxed">{feature.description}</CardDescription>
+                  <CardDescription className="text-base leading-relaxed">
+                    {feature.description}
+                  </CardDescription>
                 </CardContent>
               </Card>
             ))}
@@ -143,94 +119,33 @@ const LandingPage = ({ onGetStarted }: LandingPageProps) => {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 px-4">
+      <section className="px-4 pb-20">
         <div className="container mx-auto">
-          <div className="grid md:grid-cols-3 gap-8 text-center">
-            <div className="metric-card text-center">
-              <div className="currency-display bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                25,000+
-              </div>
-              <p className="text-muted-foreground font-medium">Professionals Trust Us</p>
-            </div>
-            <div className="metric-card text-center">
-              <div className="currency-display bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                $50M+
-              </div>
-              <p className="text-muted-foreground font-medium">Income Tracked</p>
-            </div>
-            <div className="metric-card text-center">
-              <div className="currency-display bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                99.9%
-              </div>
-              <p className="text-muted-foreground font-medium">Uptime SLA</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-20 px-4 bg-card/30">
-        <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Trusted by Professionals
-            </h3>
-            <p className="text-xl text-muted-foreground">Real feedback from financial professionals worldwide</p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="financial-card hover:shadow-xl transition-all duration-300">
-                <CardContent className="pt-6">
-                  <div className="space-y-4">
-                    <p className="text-muted-foreground italic text-lg leading-relaxed">"{testimonial.content}"</p>
-                    <div className="pt-4 border-t border-border">
-                      <p className="font-semibold text-foreground">{testimonial.name}</p>
-                      <p className="text-sm text-primary font-medium">{testimonial.role}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto text-center">
-          <div className="max-w-3xl mx-auto space-y-8 metric-card">
-            <h3 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Ready to Transform Your Financial Management?
-            </h3>
-            <p className="text-xl text-muted-foreground leading-relaxed">
-              Join over 25,000 professionals who trust Salary Tracker for their income management. 
-              Start your financial journey today with our comprehensive analytics platform.
+          <div className="overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-br from-teal-600 to-emerald-700 p-8 text-white sm:p-12">
+            <h2 className="font-display text-3xl font-bold sm:text-4xl">Ready to take control of campus cash?</h2>
+            <p className="mt-3 max-w-2xl text-white/85">
+              Create an account, log a shift, add an expense, and see your tips vs bank balance update instantly.
             </p>
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               onClick={onGetStarted}
-              className="financial-gradient text-white px-12 py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300"
+              className="mt-6 bg-white text-teal-900 hover:bg-white/90"
             >
-              Start Your Free Trial
+              Open your dashboard
             </Button>
-            <p className="text-sm text-muted-foreground">No credit card required • Full access to all features</p>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-card border-t py-12 px-4">
-        <div className="container mx-auto text-center">
-          <div className="flex items-center justify-center space-x-3 mb-6">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <DollarSign className="h-6 w-6 text-primary" />
-            </div>
-            <span className="text-xl font-bold text-foreground">Salary Tracker</span>
+      <footer className="border-t border-border/60 px-4 py-10">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-left">
+          <div className="flex items-center gap-2">
+            <Wallet className="h-5 w-5 text-primary" />
+            <span className="font-display font-semibold">Salary Tracker</span>
           </div>
-          <p className="text-muted-foreground">© 2024 Salary Tracker. Professional Financial Management Platform.</p>
-          <p className="text-sm text-muted-foreground mt-2">Secure • Reliable • Professional</p>
+          <p className="text-sm text-muted-foreground">
+            Built for students working tip and campus jobs in Canada & the US.
+          </p>
         </div>
       </footer>
     </div>

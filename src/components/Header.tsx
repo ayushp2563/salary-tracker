@@ -28,11 +28,11 @@ const Header = () => {
   return (
     <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-primary/10 rounded-lg">
+          <div className="flex items-center space-x-3">
+          <div className="rounded-xl bg-primary/15 p-2">
             <DollarSign className="h-6 w-6 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+          <h1 className="font-display text-2xl font-bold tracking-tight">
             Salary Tracker
           </h1>
         </div>
@@ -49,7 +49,7 @@ const Header = () => {
               <DropdownMenuContent className="w-64" align="end" forceMount>
                 <div className="flex flex-col space-y-1 p-3 border-b">
                   <p className="text-sm font-medium">{currentUser.email}</p>
-                  <p className="text-xs text-muted-foreground">Professional Account</p>
+                  <p className="text-xs text-muted-foreground">Student account</p>
                 </div>
                 <DropdownMenuItem onClick={handleSettings} className="cursor-pointer">
                   <Settings className="mr-2 h-4 w-4" />

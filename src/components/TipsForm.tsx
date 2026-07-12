@@ -5,8 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { Plus } from 'lucide-react';
 import { useSalaryEntries } from '@/hooks/useSalaryEntries';
+import { toast } from '@/hooks/use-toast';
 
 const TipsForm = () => {
   const [formData, setFormData] = useState({
@@ -22,6 +24,11 @@ const TipsForm = () => {
     e.preventDefault();
     
     if (!formData.date || !formData.tips) {
+      toast({
+        title: 'Missing fields',
+        description: 'Please enter a date and tips amount',
+        variant: 'destructive',
+      });
       return;
     }
 
@@ -33,14 +40,19 @@ const TipsForm = () => {
       base_salary: 0,
       tips: parseFloat(formData.tips),
       currency: formData.currency,
+      description: formData.description || undefined,
     });
 
     if (!error) {
+      toast({
+        title: 'Tips added',
+        description: 'Your tips have been saved',
+      });
       setFormData({
         date: '',
         tips: '',
         description: '',
-        currency: 'USD',
+        currency: formData.currency,
       });
     }
   };
@@ -95,11 +107,22 @@ const TipsForm = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="USD">USD ($)</SelectItem>
+                <SelectItem value="CAD">CAD ($)</SelectItem>
                 <SelectItem value="EUR">EUR (€)</SelectItem>
                 <SelectItem value="GBP">GBP (£)</SelectItem>
-                <SelectItem value="CAD">CAD ($)</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="tips_description">Notes (optional)</Label>
+            <Textarea
+              id="tips_description"
+              placeholder="Friday dinner shift, holiday bonus..."
+              value={formData.description}
+              onChange={(e) => handleChange('description', e.target.value)}
+              rows={2}
+            />
           </div>
           
           <Button type="submit" className="w-full">

@@ -35,7 +35,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="system" storageKey="salary-tracker-theme">
-        <ThemeColorProvider defaultColor="blue" storageKey="salary-tracker-theme-color">
+        <ThemeColorProvider defaultColor="teal" storageKey="salary-tracker-theme-color">
           <TooltipProvider>
             <AuthProvider>
               <Toaster />

@@ -7,30 +7,26 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SalaryForm from "@/components/SalaryForm";
 import TipsForm from "@/components/TipsForm";
-import ExtraHoursForm from "@/components/ExtraHoursForm";
 import StatsOverview from "@/components/StatsOverview";
 import IncomeChart from "@/components/IncomeChart";
-import SalarySummaryOptions from "@/components/SalarySummaryOptions";
 import SalarySearch from "@/components/SalarySearch";
 import SalaryEntriesList from "@/components/SalaryEntriesList";
-import { ExtraHoursCard } from "@/components/ExtraHoursCard";
 import { HoursCalculator } from "@/components/HoursCalculator";
 import { DailyHoursForm } from "@/components/DailyHoursForm";
 import { DailyHoursList } from "@/components/DailyHoursList";
 import { NotificationSettings } from "@/components/NotificationSettings";
 import { AppSidebar } from "@/components/AppSidebar";
-import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { Menu, X } from "lucide-react";
-import { IncomeHoursWidget } from "@/components/widgets/IncomeHoursWidget";
-import { AnalyticsWidget } from "@/components/widgets/AnalyticsWidget";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import ExpenseForm from "@/components/ExpenseForm";
+import ExpenseTracker from "@/components/ExpenseTracker";
+import { MoneyPoolsCard, WorkHourGuard } from "@/components/StudentFinanceCards";
 
-// Separate component to use useSidebar hook inside SidebarProvider
 const MenuTrigger = () => {
   const { open, setOpen, openMobile, setOpenMobile, isMobile } = useSidebar();
-  
   const isOpen = isMobile ? openMobile : open;
-  
+
   const toggleSidebar = () => {
     if (isMobile) {
       setOpenMobile(!openMobile);
@@ -38,17 +34,14 @@ const MenuTrigger = () => {
       setOpen(!open);
     }
   };
-  
+
   return (
     <button
       onClick={toggleSidebar}
-      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-primary border border-primary/20"
+      className="flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 px-3 py-2 text-primary transition-colors hover:bg-primary/20"
     >
       {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-      <span className="font-medium">Menus</span>
-      <span className="text-xs text-muted-foreground ml-1">
-        {isOpen ? "tap to close" : "tap to open"}
-      </span>
+      <span className="font-medium">Menu</span>
     </button>
   );
 };
@@ -58,118 +51,133 @@ const Index = () => {
   const [showAuth, setShowAuth] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
 
-  // Show loading state while checking authentication
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-app-canvas">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
+          <p className="text-muted-foreground">Loading your dashboard...</p>
         </div>
       </div>
     );
   }
 
-  // Show authentication form if requested
   if (showAuth && !user) {
     return <AuthForm onBack={() => setShowAuth(false)} />;
   }
 
-  // Show landing page for unauthenticated users
   if (!user) {
     return <LandingPage onGetStarted={() => setShowAuth(true)} />;
   }
 
-  // Show dashboard for authenticated users
   return (
     <SidebarProvider>
-      <div className="min-h-screen w-full flex bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="flex min-h-screen w-full bg-app-canvas">
         <AppSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-        
-        <div className="flex-1 flex flex-col">
-          <Header />
-          
-          <div className="p-2 sm:p-4 lg:p-6 flex-1 pb-20 lg:pb-6">
-            <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
-              {/* Sidebar Trigger */}
-              <MenuTrigger />
 
-              {/* Header */}
-              <div className="text-center space-y-2 sm:space-y-4 py-4 sm:py-8">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
-                  Salary Tracker
-                </h1>
-                <p className="text-sm sm:text-base lg:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4">
-                  Track your earnings, monitor trends, and manage your income with ease
+        <div className="flex flex-1 flex-col">
+          <Header />
+
+          <div className="flex-1 p-3 pb-24 sm:p-4 lg:p-6 lg:pb-6">
+            <div className="mx-auto max-w-7xl space-y-5 sm:space-y-6">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <MenuTrigger />
+                <p className="text-sm text-muted-foreground">
+                  Track income, tips, and campus spending in one place
                 </p>
               </div>
 
-              {/* Widgets Section */}
               {activeTab === "overview" && (
-                <div className="grid gap-4 sm:gap-6 md:grid-cols-2 mb-6">
-                  <IncomeHoursWidget />
-                  <AnalyticsWidget />
-                </div>
-              )}
-
-              {/* Stats Overview and Extra Hours */}
-              {activeTab === "overview" && (
-                <div className="space-y-4 sm:space-y-6">
+                <div className="space-y-5 animate-fade-up">
+                  <div className="space-y-1">
+                    <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
+                      Dashboard
+                    </h1>
+                    <p className="max-w-2xl text-muted-foreground">
+                      Income, expenses, and student work limits at a glance
+                    </p>
+                  </div>
                   <StatsOverview />
-                  <div className="px-6">
-                    <ExtraHoursCard />
+                  <div className="grid gap-4 lg:grid-cols-2">
+                    <MoneyPoolsCard />
+                    <WorkHourGuard />
+                  </div>
+                  <div className="grid gap-4 lg:grid-cols-2">
+                    <SalaryEntriesList />
+                    <ExpenseTracker />
                   </div>
                 </div>
               )}
 
-              {/* Main Content */}
-              <div className="mt-4 sm:mt-6">
-                {activeTab === "overview" && (
-                  <div className="space-y-4 sm:space-y-6">
-                    <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-                      <SalaryEntriesList />
-                      <SalarySummaryOptions />
-                    </div>
+              {activeTab === "add" && (
+                <div className="space-y-5 animate-fade-up">
+                  <div>
+                    <h1 className="font-display text-3xl font-bold">Add Income</h1>
+                    <p className="text-muted-foreground">Log paycheques and tips from work</p>
                   </div>
-                )}
-
-                {activeTab === "add" && (
-                  <div className="grid gap-4 sm:gap-6 lg:grid-cols-3 max-w-7xl mx-auto">
+                  <div className="grid gap-4 lg:grid-cols-2">
                     <SalaryForm />
                     <TipsForm />
-                    <ExtraHoursForm />
                   </div>
-                )}
+                </div>
+              )}
 
-                {activeTab === "calculator" && (
-                  <div className="max-w-4xl mx-auto">
-                    <HoursCalculator />
+              {activeTab === "expenses" && (
+                <div className="space-y-5 animate-fade-up">
+                  <div>
+                    <h1 className="font-display text-3xl font-bold">Expenses</h1>
+                    <p className="text-muted-foreground">
+                      Add spending, search by name, and tag tips vs bank income
+                    </p>
                   </div>
-                )}
-
-                {activeTab === "search" && (
-                  <div className="max-w-4xl mx-auto">
-                    <SalarySearch />
+                  <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
+                    <ExpenseForm />
+                    <ExpenseTracker />
                   </div>
-                )}
+                </div>
+              )}
 
-                {activeTab === "analytics" && (
+              {activeTab === "search" && (
+                <div className="mx-auto max-w-4xl space-y-5 animate-fade-up">
+                  <div>
+                    <h1 className="font-display text-3xl font-bold">Search</h1>
+                    <p className="text-muted-foreground">Find salary entries by date range</p>
+                  </div>
+                  <SalarySearch />
+                </div>
+              )}
+
+              {activeTab === "analytics" && (
+                <div className="space-y-5 animate-fade-up">
+                  <div>
+                    <h1 className="font-display text-3xl font-bold">Insights</h1>
+                    <p className="text-muted-foreground">Trends across income and spending</p>
+                  </div>
+                  <MoneyPoolsCard />
                   <IncomeChart />
-                )}
+                </div>
+              )}
 
-                {activeTab === "daily-hours" && (
-                  <div className="space-y-6">
-                    <div className="grid gap-6 md:grid-cols-2">
-                      <DailyHoursForm />
-                      <NotificationSettings />
-                    </div>
-                    <DailyHoursList />
+              {activeTab === "daily-hours" && (
+                <div className="space-y-6 animate-fade-up">
+                  <div>
+                    <h1 className="font-display text-3xl font-bold">Hours</h1>
+                    <p className="text-muted-foreground">
+                      Log shifts and estimate hours from your bank deposit
+                    </p>
                   </div>
-                )}
-              </div>
+                  <WorkHourGuard />
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <DailyHoursForm />
+                    <NotificationSettings />
+                  </div>
+                  <DailyHoursList />
+                  <HoursCalculator />
+                </div>
+              )}
             </div>
           </div>
-          
+
           <Footer />
           <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
