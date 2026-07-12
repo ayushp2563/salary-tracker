@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
+import { subscribeToTable } from '@/lib/realtime';
 
 export interface DailyHours {
   id: string;
@@ -12,44 +13,6 @@ export interface DailyHours {
   created_at: string;
   updated_at: string;
 }
-
-// Singleton channel management
-let activeChannel: any = null;
-let subscriberCount = 0;
-const listeners: Set<() => void> = new Set();
-
-const setupRealtimeSubscription = (userId: string) => {
-  if (activeChannel) return;
-
-  console.log('Setting up daily hours real-time subscription for user:', userId);
-  
-  activeChannel = supabase
-    .channel(`daily_hours_${userId}`)
-    .on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'daily_hours',
-        filter: `user_id=eq.${userId}`,
-      },
-      (payload) => {
-        console.log('Daily hours real-time update received:', payload);
-        // Notify all listeners
-        listeners.forEach(listener => listener());
-      }
-    )
-    .subscribe();
-};
-
-const cleanupRealtimeSubscription = () => {
-  if (subscriberCount === 0 && activeChannel) {
-    console.log('Cleaning up daily hours real-time subscription');
-    supabase.removeChannel(activeChannel);
-    activeChannel = null;
-    listeners.clear();
-  }
-};
 
 export const useDailyHours = () => {
   const [dailyHours, setDailyHours] = useState<DailyHours[]>([]);
@@ -75,9 +38,9 @@ export const useDailyHours = () => {
     } catch (error: any) {
       console.error('Error fetching daily hours:', error);
       toast({
-        title: "Error",
-        description: "Failed to load daily hours",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to load daily hours',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -85,25 +48,25 @@ export const useDailyHours = () => {
   };
 
   useEffect(() => {
-    if (!user) return;
-
-    subscriberCount++;
-    console.log('Daily hours subscriber count:', subscriberCount);
+    if (!user) {
+      setDailyHours([]);
+      setLoading(false);
+      return;
+    }
 
     fetchDailyHours();
 
-    // Add listener for this component
-    listeners.add(fetchDailyHours);
+    const unsubscribe = subscribeToTable({
+      name: `daily_hours_shared_${user.id}`,
+      table: 'daily_hours',
+      filter: `user_id=eq.${user.id}`,
+      onEvent: () => {
+        fetchDailyHours();
+      },
+    });
 
-    // Setup subscription if not already active
-    setupRealtimeSubscription(user.id);
-
-    return () => {
-      subscriberCount--;
-      console.log('Daily hours subscriber count after cleanup:', subscriberCount);
-      listeners.delete(fetchDailyHours);
-      cleanupRealtimeSubscription();
-    };
+    return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   const addDailyHours = async (data: Omit<DailyHours, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
@@ -117,18 +80,18 @@ export const useDailyHours = () => {
         .single();
 
       if (error) throw error;
-      
+
       toast({
-        title: "Success",
-        description: "Daily hours added successfully",
+        title: 'Success',
+        description: 'Daily hours added successfully',
       });
-      
+
       return { data: result, error: null };
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message || "Failed to add daily hours",
-        variant: "destructive",
+        title: 'Error',
+        description: error.message || 'Failed to add daily hours',
+        variant: 'destructive',
       });
       return { data: null, error };
     }
@@ -145,18 +108,18 @@ export const useDailyHours = () => {
         .single();
 
       if (error) throw error;
-      
+
       toast({
-        title: "Success",
-        description: "Daily hours updated successfully",
+        title: 'Success',
+        description: 'Daily hours updated successfully',
       });
-      
+
       return { data, error: null };
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message || "Failed to update daily hours",
-        variant: "destructive",
+        title: 'Error',
+        description: error.message || 'Failed to update daily hours',
+        variant: 'destructive',
       });
       return { data: null, error };
     }
@@ -171,18 +134,18 @@ export const useDailyHours = () => {
         .eq('user_id', user?.id);
 
       if (error) throw error;
-      
+
       toast({
-        title: "Success",
-        description: "Daily hours deleted successfully",
+        title: 'Success',
+        description: 'Daily hours deleted successfully',
       });
-      
+
       return { error: null };
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message || "Failed to delete daily hours",
-        variant: "destructive",
+        title: 'Error',
+        description: error.message || 'Failed to delete daily hours',
+        variant: 'destructive',
       });
       return { error };
     }
