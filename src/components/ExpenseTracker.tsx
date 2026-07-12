@@ -4,14 +4,14 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Trash2, Wallet, Banknote } from 'lucide-react';
+import { Search, Trash2, Wallet, Banknote, Cloud } from 'lucide-react';
 import { useExpenses } from '@/hooks/useExpenses';
 import { EXPENSE_CATEGORIES, type ExpenseCategory, type PaymentSource } from '@/types/expense';
 import { formatCurrency } from '@/lib/utils';
 import { format } from 'date-fns';
 
 export const ExpenseTracker = () => {
-  const { expenses, searchExpenses, deleteExpense, totals, loading } = useExpenses();
+  const { expenses, searchExpenses, deleteExpense, totals, loading, backend } = useExpenses();
   const [query, setQuery] = useState('');
   const [source, setSource] = useState<PaymentSource | 'all'>('all');
   const [category, setCategory] = useState<ExpenseCategory | 'all'>('all');
@@ -24,8 +24,19 @@ export const ExpenseTracker = () => {
   const categoryLabel = (value: string) =>
     EXPENSE_CATEGORIES.find((c) => c.value === value)?.label || value;
 
+  const syncLabel =
+    backend === 'table'
+      ? 'Synced via expenses table'
+      : backend === 'salary_entries'
+        ? 'Synced to Supabase (cloud)'
+        : 'Connecting…';
+
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <Cloud className="h-3.5 w-3.5 text-primary" />
+        <span>{syncLabel} · visible on all your devices</span>
+      </div>
       <div className="grid gap-4 sm:grid-cols-3">
         <Card className="border-border/60 bg-gradient-to-br from-background to-muted/40">
           <CardHeader className="pb-2">
