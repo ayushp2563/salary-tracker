@@ -53,6 +53,10 @@ export type Database = {
           id: string
           notification_time: string | null
           notifications_enabled: boolean | null
+          preferred_currency: string | null
+          region: string | null
+          student_status: string | null
+          weekly_hour_cap: number | null
           updated_at: string
         }
         Insert: {
@@ -63,6 +67,10 @@ export type Database = {
           id: string
           notification_time?: string | null
           notifications_enabled?: boolean | null
+          preferred_currency?: string | null
+          region?: string | null
+          student_status?: string | null
+          weekly_hour_cap?: number | null
           updated_at?: string
         }
         Update: {
@@ -73,6 +81,52 @@ export type Database = {
           id?: string
           notification_time?: string | null
           notifications_enabled?: boolean | null
+          preferred_currency?: string | null
+          region?: string | null
+          student_status?: string | null
+          weekly_hour_cap?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      expenses: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          amount: number
+          category: string
+          payment_source: string
+          currency: string
+          expense_date: string
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          amount: number
+          category?: string
+          payment_source?: string
+          currency?: string
+          expense_date: string
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          amount?: number
+          category?: string
+          payment_source?: string
+          currency?: string
+          expense_date?: string
+          notes?: string | null
+          created_at?: string
           updated_at?: string
         }
         Relationships: []

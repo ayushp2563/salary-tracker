@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Plus } from 'lucide-react';
 import { useSalaryEntries } from '@/hooks/useSalaryEntries';
+import { toast } from '@/hooks/use-toast';
 
 const SalaryForm = () => {
   const [formData, setFormData] = useState({
@@ -27,6 +28,11 @@ const SalaryForm = () => {
     e.preventDefault();
     
     if (!formData.start_date || !formData.end_date || !formData.hours_worked || !formData.base_salary) {
+      toast({
+        title: 'Missing fields',
+        description: 'Please fill in dates, hours, and base salary',
+        variant: 'destructive',
+      });
       return;
     }
 
@@ -42,6 +48,10 @@ const SalaryForm = () => {
     });
 
     if (!error) {
+      toast({
+        title: 'Entry saved',
+        description: 'Your salary entry has been added',
+      });
       setFormData({
         start_date: '',
         end_date: '',
@@ -49,7 +59,7 @@ const SalaryForm = () => {
         extra_hours: '',
         base_salary: '',
         tips: '',
-        currency: 'USD',
+        currency: formData.currency,
         description: '',
       });
     }
@@ -160,9 +170,9 @@ const SalaryForm = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="USD">USD ($)</SelectItem>
+                  <SelectItem value="CAD">CAD ($)</SelectItem>
                   <SelectItem value="EUR">EUR (€)</SelectItem>
                   <SelectItem value="GBP">GBP (£)</SelectItem>
-                  <SelectItem value="CAD">CAD ($)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

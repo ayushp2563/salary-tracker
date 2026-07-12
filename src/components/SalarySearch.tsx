@@ -13,6 +13,7 @@ const SalarySearch = () => {
   const [searchParams, setSearchParams] = useState({
     startDate: '',
     endDate: '',
+    query: '',
   });
   const [searchResults, setSearchResults] = useState<SalaryEntry[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
@@ -22,15 +23,17 @@ const SalarySearch = () => {
   const { entries, deleteEntry } = useSalaryEntries();
 
   const handleSearch = () => {
-    if (!searchParams.startDate || !searchParams.endDate) {
-      return;
-    }
-
-    const filtered = entries.filter(entry => {
+    const q = searchParams.query.trim().toLowerCase();
+    const filtered = entries.filter((entry) => {
       const entryDate = new Date(entry.start_date);
-      const start = new Date(searchParams.startDate);
-      const end = new Date(searchParams.endDate);
-      return entryDate >= start && entryDate <= end;
+      const matchesDates =
+        (!searchParams.startDate || entryDate >= new Date(searchParams.startDate)) &&
+        (!searchParams.endDate || entryDate <= new Date(searchParams.endDate));
+      const matchesQuery =
+        !q ||
+        (entry.description || '').toLowerCase().includes(q) ||
+        entry.currency.toLowerCase().includes(q);
+      return matchesDates && matchesQuery;
     });
 
     setSearchResults(filtered);
@@ -64,10 +67,19 @@ const SalarySearch = () => {
           Search Salary Reports
         </CardTitle>
         <CardDescription>
-          Find salary entries by date range
+          Find salary entries by date range or notes
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="search_query">Search text</Label>
+          <Input
+            id="search_query"
+            placeholder="Search notes / description..."
+            value={searchParams.query}
+            onChange={(e) => setSearchParams((prev) => ({ ...prev, query: e.target.value }))}
+          />
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="search_start_date">Start Date</Label>
